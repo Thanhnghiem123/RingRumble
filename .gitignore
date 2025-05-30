@@ -1,0 +1,64 @@
+# =========================
+# Unity Git Ignore File
+# =========================
+
+# Unity generated folders
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild*/
+[Ll]ogs/
+MemoryCaptures/
+CrashReports/
+GameDesktop/
+
+*.pidb
+*.booproj
+*.unityproj
+
+# Build results
+*.apk
+*.aab
+*.exe
+*.app
+*.zip
+*.rar
+*.resource
+
+# Unity Collab (if not using)
+.collabignore
+.collab/
+
+# User-specific files
+*.user
+*.userprefs
+
+# OS generated files
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Icon?
+Desktop.ini
+
+# IDE specific files
+.vscode/
+.idea/
+.vs/
+*.sln
+*.csproj
+*.sln.iml
+*.ipr
+*.iws
+
+# Git conflict files
+*.orig
+
+# Rider specific (if used)
+*.sln.dotSettings
+.idea/
+
+# Unity Cloud Build
+.cloud/
+
+# Crash dumps
+*.dmp
