@@ -4,19 +4,31 @@ using System.Collections;
 public class PlayerMovement : MonoBehaviour, IPlayerMovement
 {
     [Header("Movement Settings")]
+    [Tooltip("Tốc độ di chuyển của nhân vật")]
     public float speed;
+    [Tooltip("Tốc độ xoay khi đổi hướng")]
     public float rotationSpeed;
+    [Tooltip("Lực nhảy áp dụng theo hướng 45 độ")]
     public float jumpForce; // Lực nhảy, điều chỉnh trong Inspector
+    [Tooltip("Khoảng cách kiểm tra mặt đất phía dưới nhân vật")]
     public float groundCheckDistance = 0.2f; // Khoảng cách kiểm tra chạm đất
+    [Tooltip("Layer được coi là mặt đất")]
     public LayerMask groundLayer; // Layer để xác định mặt đất
+    [Tooltip("Trạng thái tiếp xúc với mặt đất")]
     public bool isGrounded; // Trạng thái chạm đất
+    [Tooltip("Thời gian nhân vật di chuyển về phía trước trước khi nhảy")]
     public float jumpMoveDuration; // Thời gian di chuyển trước khi nhảy
+    [Tooltip("Thời gian nhân vật di chuyển về phía trước trước khi trèo")]
     public float climbMoveDuration; // Thời gian di chuyển trước khi trèo
 
     [Header("Climb Settings")]
+    [Tooltip("Hệ số giảm tốc độ khi tiếp cận vật cản")]
     public float climbForwardSpeedMultiplier = 0.4f; // Hệ số tốc độ khi tiếp cận vật cản
+    [Tooltip("Chiều cao tối đa khi trèo vật cản")]
     public float climbHeight = 1.5f; // Chiều cao trèo
+    [Tooltip("Khoảng cách tiến về phía trước khi hoàn thành trèo")]
     public float climbDistance = 1f; // Khoảng cách tiến về phía trước khi trèo
+    [Tooltip("Thời gian thực hiện hoàn tất động tác trèo")]
     public float climbDuration = 1f; // Thời gian để trèo
 
     private IAnimationManager animationManager;
@@ -66,6 +78,10 @@ public class PlayerMovement : MonoBehaviour, IPlayerMovement
         isGrounded = Physics.Raycast(transform.position, Vector3.down, groundCheckDistance, groundLayer);
     }
 
+    
+    /// <summary>
+    /// Di chuyển nhân vật dựa trên đầu vào từ người chơi.
+    /// </summary>
     public void Move()
     {
         if (playerAttack != null && playerAttack.IsBlocking())
@@ -90,6 +106,10 @@ public class PlayerMovement : MonoBehaviour, IPlayerMovement
         }
     }
 
+
+    /// <summary>
+    /// Dừng di chuyển của nhân vật, đặt vận tốc về 0 trên XZ.
+    /// </summary>
     public void Stop()
     {
         if (rb != null)
@@ -101,6 +121,11 @@ public class PlayerMovement : MonoBehaviour, IPlayerMovement
         animationManager?.PlayIdle();
     }
 
+    /// <summary>
+    /// Thực hiện nhảy với một khoảng thời gian di chuyển về phía trước trước khi nhảy.
+    /// Nhân vật sẽ chạy về phía trước trong một khoảng thời gian nhất định trước khi thực hiện nhảy.
+    /// Hướng nhảy sẽ là 45 độ giữa hướng lên và hướng đi về phía trước.
+    /// </summary>
     public void Jump()
     {
         if (rb != null && isGrounded)
@@ -110,6 +135,10 @@ public class PlayerMovement : MonoBehaviour, IPlayerMovement
         }
     }
 
+    /// <summary>
+    /// Coroutine thực hiện nhảy với một khoảng thời gian di chuyển về phía trước.
+    /// </summary>
+    /// <returns></returns>
     private IEnumerator JumpWithForwardDelay()
     {
         // Chạy về phía trước trong jumpMoveDuration (chỉ XZ, không đụng tới Y)
@@ -136,6 +165,9 @@ public class PlayerMovement : MonoBehaviour, IPlayerMovement
         rb.AddForce(jumpDirection * jumpForce, ForceMode.Impulse);
     }
 
+    /// <summary>
+    /// Thực hiện nhảy qua intro, nhân vật sẽ chạy về phía trước và trèo qua vật cản.
+    /// </summary>
     public void JumpOverIntro()
     {
         if (rb != null && isGrounded)
@@ -145,6 +177,10 @@ public class PlayerMovement : MonoBehaviour, IPlayerMovement
         }
     }
 
+    /// <summary>
+    /// Coroutine thực hiện trèo qua vật cản.
+    /// </summary>
+    /// <returns></returns>
     private IEnumerator ClimbOverObstacleCoroutine()
     {
         // Chạy về phía trước trong climbMoveDuration (chỉ XZ, không đụng tới Y)
@@ -185,8 +221,4 @@ public class PlayerMovement : MonoBehaviour, IPlayerMovement
         // Tiếp tục di chuyển về phía trước sau khi trèo
         rb.linearVelocity = new Vector3(forwardXZ.x * forwardSpeed, rb.linearVelocity.y, forwardXZ.z * forwardSpeed);
     }
-
-
-
-
 }

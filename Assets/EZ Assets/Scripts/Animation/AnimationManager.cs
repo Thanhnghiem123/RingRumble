@@ -73,13 +73,12 @@ public class AnimationManager : MonoBehaviour, IAnimationManager
         switch (hitType)
         {
             case HitType.HeadPunch:
-            case HitType.Jumping1:
-            case HitType.Jumping2:
+            case HitType.KidneyPunchRight:
                 animator.SetTrigger("HeadHit");
                 
                 break;
             case HitType.KidneyPunchLeft:
-            case HitType.KidneyPunchRight: // Fixed the syntax issue here
+             // Fixed the syntax issue 
             case HitType.Kick:
                 animator.SetTrigger("KidneyHit");
                 break;
@@ -87,6 +86,8 @@ public class AnimationManager : MonoBehaviour, IAnimationManager
                 animator.SetTrigger("StomachHit");
                 break;
             case HitType.Jumping:
+            case HitType.Jumping1:
+            case HitType.Jumping2:
                 animator.SetTrigger("HoldKickHit");
                 break;
         }

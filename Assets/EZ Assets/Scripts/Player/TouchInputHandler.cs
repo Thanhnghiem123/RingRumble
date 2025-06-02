@@ -6,8 +6,8 @@ public class TouchInputHandler : MonoBehaviour, IMovementInput
 {
     public Vector2 touchStartPos;
     public float smoothTime = 0.1f;
-    private Vector3 smoothedMoveDir = Vector3.zero;
-    private bool isMoving = false;
+    public Vector3 smoothedMoveDir = Vector3.zero;
+    public bool isMoving = false;
     public Transform cameraTransform; // Kéo thả camera vào đây nếu muốn hướng theo camera
 
     public void ProcessInput()

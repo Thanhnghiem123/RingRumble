@@ -17,14 +17,18 @@ public class Player : MonoBehaviour, IPlayerAttack, IPlayerMovement, IMovementIn
 
 
     [Header("Attack Settings")]
-    public float attackRange;
+    public float capsuleHeight = 2f;
+    public float capsuleRadius = 0.35f;
+    public float kickRange = 0.65f;
+
     public LayerMask enemyLayer;
+    public LayerMask ropesLayer; 
 
 
     [Header("Attack Delay Settings")]
     public float punchDelay = 0.2f;
     public float kickDelay = 0.25f;
-    public float holdPunchDelay = 0.3f;
+    public float holdPunchDelay = 0.9f;
     public float holdKickDelay = 0.35f;
 
 
@@ -39,14 +43,15 @@ public class Player : MonoBehaviour, IPlayerAttack, IPlayerMovement, IMovementIn
     private IPlayerAttack playerAttack;
     private IPlayerMovement playerMovement;
     private IMovementInput movementInput;
-    private HitReceiver hitReceiver;
+    private PlayerHitReceiver hitReceiver;
 
     // getters , setter
     public float PunchDelay { get => punchDelay; set => punchDelay = value; }
     public float KickDelay { get => kickDelay; set => kickDelay = value; }
     public float HoldPunchDelay { get => holdPunchDelay; set => holdPunchDelay = value; }
     public float HoldKickDelay { get => holdKickDelay; set => holdKickDelay = value; }
-    public float AttackRange { get => attackRange; set => attackRange = value; }
+    public float CapsuleHeight { get => capsuleHeight; set => capsuleHeight = value; }
+    public float CapsuleRadius { get => capsuleRadius; set => capsuleRadius = value; }
 
     void Start()
     {
@@ -71,7 +76,7 @@ public class Player : MonoBehaviour, IPlayerAttack, IPlayerMovement, IMovementIn
         {
             Debug.LogError("MovementInput component not found on " + gameObject.name);
         }
-        hitReceiver = GetComponent<HitReceiver>();
+        hitReceiver = GetComponent<PlayerHitReceiver>();
         if (hitReceiver == null)
         {
             Debug.LogError("HitReceiver component not found on " + gameObject.name);
@@ -97,7 +102,7 @@ public class Player : MonoBehaviour, IPlayerAttack, IPlayerMovement, IMovementIn
         HitType hitType = (HitType)(animationManager?.PlayHeadPunch());
         punchTimer.Trigger();
 
-        hitReceiver.DelayedHit(hitType, punchDelay, attackRange, enemyLayer);
+        hitReceiver.ReceiveHit(hitType, punchDelay, capsuleHeight, capsuleRadius, enemyLayer);
     }
 
 
@@ -113,7 +118,7 @@ public class Player : MonoBehaviour, IPlayerAttack, IPlayerMovement, IMovementIn
         HitType hitType = (HitType)(animationManager?.PlayHoldPunch());
         specialTimer.Trigger();
 
-        hitReceiver.DelayedHit(hitType, holdPunchDelay, attackRange, enemyLayer);
+        hitReceiver.ReceiveHit(hitType, holdPunchDelay, capsuleHeight, capsuleRadius, enemyLayer);
     }
 
     public void Kick()
@@ -125,7 +130,7 @@ public class Player : MonoBehaviour, IPlayerAttack, IPlayerMovement, IMovementIn
         HitType hitType = (HitType)(animationManager?.PlayKick());
         kickTimer.Trigger();
 
-        hitReceiver.DelayedHit(hitType, kickDelay, attackRange, enemyLayer);
+        hitReceiver.ReceiveHit(hitType, kickDelay, capsuleHeight, capsuleRadius, enemyLayer);
     }
 
     public void HoldKick()
@@ -136,8 +141,8 @@ public class Player : MonoBehaviour, IPlayerAttack, IPlayerMovement, IMovementIn
         HitType hitType = (HitType)(animationManager?.PlayHoldKick());
         playerMovement?.Jump();
         specialTimer.Trigger();
-
-        hitReceiver.DelayedHit(hitType, holdKickDelay, attackRange, enemyLayer);
+        
+        hitReceiver.ReceiveHit(hitType, holdKickDelay, capsuleHeight, capsuleRadius + kickRange, enemyLayer);
     }
 
     public void Jump()
@@ -146,18 +151,24 @@ public class Player : MonoBehaviour, IPlayerAttack, IPlayerMovement, IMovementIn
         if (!jumpTimer.IsReady) return;
         if (!specialTimer.IsReady) return;
         animationManager?.PlayJump();
-        playerMovement?.Jump(); // Gọi vật lý nhảy từ PlayerMovement
+        playerMovement?.Jump(); 
         jumpTimer.Trigger();
     }
 
     public void JumpOverIntro()
     {
         // Giảm thời gian cooldown cho nhảy qua intro
-        if (!climbTimer.IsReady) return;
-        if (!specialTimer.IsReady) return;
+        
 
-        animationManager?.PlayJumpOverIntro();
-        playerMovement?.JumpOverIntro(); // Gọi nhảy để vượt chướng ngại
+        if(hitReceiver.CanClimb(capsuleHeight, capsuleRadius, ropesLayer))
+        {
+            if (!climbTimer.IsReady) return;
+            if (!specialTimer.IsReady) return;
+            // Nếu có thể leo trèo, thực hiện nhảy qua intro
+            animationManager?.PlayJumpOverIntro();
+            playerMovement?.JumpOverIntro(); // Gọi vật lý nhảy qua intro từ PlayerMovement
+            // Kích hoạt cooldown cho nhảy qua intro
+        }
         climbTimer.Trigger();
     }
 
