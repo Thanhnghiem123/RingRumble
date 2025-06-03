@@ -1,7 +1,6 @@
 ﻿
 // AnimationManager.cs - Manages all player animations
 using UnityEngine;
-
 public class AnimationManager : MonoBehaviour, IAnimationManager
 {
     private Animator animator;
