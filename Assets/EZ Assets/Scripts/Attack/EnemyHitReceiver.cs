@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
+using Ilumisoft.HealthSystem;
+using Ilumisoft.HealthSystem.UI;
 
 public class EnemyHitReceiver : HitReceiver
 {
@@ -8,27 +10,73 @@ public class EnemyHitReceiver : HitReceiver
         base.Awake();
     }
 
-  
 
-    protected override void ReceiveHit(HitType hitType, Transform attacker = null)
+
+    protected override void ReceiveHit(HitType hitType, float dame, Transform receiver = null)
     {
-        if (attacker != null && knockbackConfig != null)
+        if (receiver != null && knockbackConfig != null)
         {
             // Lấy animationManager và Rigidbody từ attacker
-            AnimationManager attackerAnim = attacker.GetComponent<AnimationManager>();
-            Rigidbody attackerRb = attacker.GetComponent<Rigidbody>();
+            AnimationManager receiverAnim = receiver.GetComponent<AnimationManager>();
+            AnimationManager attackerrAnim = GetComponent<AnimationManager>();
+            Rigidbody receiverRb = receiver.GetComponent<Rigidbody>();
 
-            // Phát animation trên attacker
-            attackerAnim?.PlayHit(hitType);
+            // attacker = enemy
+            // receiver = player
+            Debug.Log("ISALIVE: " + IsAlive());
+            
 
             // Áp dụng knockback lên attacker
-            if (attackerRb != null)
+            if (receiverRb != null)
             {
-                Debug.Log($"EnemyHitReceiver: Received hit of type {hitType} from {attacker.name}");
-                Debug.Log($"EnemyHitReceiver: Transform position: {transform.position}, Attacker position: {attacker.position}");
-                Vector3 knockbackDir = (attacker.position - transform.position ).normalized;
-                attackerRb.AddForce(knockbackDir * knockbackConfig.GetKnockbackForce(hitType), ForceMode.Impulse);
+                Debug.Log($"EnemyHitReceiver: Received hit of type {hitType} from {receiver.name}");
+                Debug.Log($"EnemyHitReceiver: Transform position: {transform.position}, Attacker position: {receiver.position}");
+                Vector3 knockbackDir = (receiver.position - transform.position).normalized;
+                receiverRb.AddForce(knockbackDir * knockbackConfig.GetKnockbackForce(hitType), ForceMode.Impulse);
+                Debug.Log($"EnemyHitReceiver: Applying damage {dame} to health: {health.name} :  {dame}");
+                health.ApplyDamage(dame);
+
+                if (IsAlive() == false)
+                {
+                    receiverAnim?.PlayDefeat();
+                    attackerrAnim?.PlayVictory();
+
+                    // Tắt toàn bộ script (MonoBehaviour) trên GameObject của attacker ngoai tru scri
+                    if (attackerrAnim != null)
+                    {
+                        MonoBehaviour[] scripts = attackerrAnim.gameObject.GetComponents<MonoBehaviour>();
+                        foreach (var script in scripts)
+                        {
+                            if (script != null && script != this) // Không tắt chính EnemyHitReceiver nếu cần
+                                script.enabled = false;
+                        }
+                    }
+                    if (receiverAnim != null)
+                    {
+                        MonoBehaviour[] scripts = receiverAnim.gameObject.GetComponents<MonoBehaviour>();
+                        foreach (var script in scripts)
+                        {
+                            if (script != null && script != this && !(script is PlayerHealthbar))
+                            {
+                                script.enabled = false;
+                            }
+                        }
+                    }
+
+                    Debug.Log("ISALIVEssssss: " + IsAlive());
+                    return;
+                }
+                else
+                {
+                    receiverAnim?.PlayHit(hitType);
+                }
             }
         }
     }
+
+
 }
+
+
+
+

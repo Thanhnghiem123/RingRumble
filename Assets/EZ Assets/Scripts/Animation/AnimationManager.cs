@@ -158,4 +158,11 @@ public class AnimationManager : MonoBehaviour, IAnimationManager
         animator.SetTrigger("Victory");
         isVictorious = true;
     }
+
+    public void PlayDefeat()
+    {
+        //if (isKnockedOut) return;
+        animator.SetTrigger("Death");
+        //isKnockedOut = true; // Đặt trạng thái là bị hạ gục
+    }
 }

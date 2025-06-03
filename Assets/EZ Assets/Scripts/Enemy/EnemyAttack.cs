@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using Ilumisoft.HealthSystem;
 using UnityEngine;
 
 /// <summary>
@@ -23,6 +24,13 @@ public class EnemyAttack : MonoBehaviour
     #endregion
 
     #region Inspector Fields
+    [Header("Enemy Combat Settings")]
+    public float damePunch = 20f;
+    public float dameHoldPunch = 20f;
+    public float dameKick = 20f;
+    public float dameHoldKick = 20f;
+
+
     [Header("Detection Settings")]
     [Tooltip("Distance at which enemy stops approaching player")]
     public float stoppingDistance = 2.5f;
@@ -215,40 +223,12 @@ public class EnemyAttack : MonoBehaviour
     /// </summary>
     private void ExecuteAttack(AttackType attackType)
     {
-        HitType hitType;
-        float delay;
+        HitType hitType = PlayAttackAnimation(attackType);
+        (float dame, float delay) = GetDamageByHitType(attackType);
 
-        // Execute attack based on type
-        switch (attackType)
-        {
-            case AttackType.Punch:
-                hitType = animationManager.PlayHeadPunch();
-                delay = attackDelay;
-                break;
 
-            case AttackType.HoldPunch:
-                hitType = animationManager.PlayHoldPunch();
-                delay = attackDelay * 1.5f; // Longer delay for hold attacks
-                break;
+        hitReceiver.ReceiveHit(hitType, delay, capsuleHeight, capsuleRadius, dame, playerLayerMask);
 
-            case AttackType.Kick:
-                hitType = animationManager.PlayKick();
-                delay = attackDelay * 1.2f; // Slightly longer delay for kicks
-                break;
-
-            case AttackType.HoldKick:
-                hitType = animationManager.PlayHoldKick();
-                delay = attackDelay * 1.7f; // Longest delay for hold kicks
-                break;
-
-            default:
-                hitType = HitType.HeadPunch;
-                delay = attackDelay;
-                break;
-        }
-
-        // Perform hit detection after appropriate delay
-        hitReceiver.ReceiveHit(hitType, delay, capsuleHeight, capsuleRadius, playerLayerMask);
     }
     #endregion
 
@@ -264,6 +244,54 @@ public class EnemyAttack : MonoBehaviour
         HoldKick = 3
     }
     #endregion
+
+
+    private HitType PlayAttackAnimation(AttackType attackType)
+    {
+        switch (attackType)
+        {
+            case AttackType.Punch:
+                return animationManager.PlayHeadPunch();
+            case AttackType.HoldPunch:
+                return animationManager.PlayHoldPunch();
+            case AttackType.Kick:
+                return animationManager.PlayKick();
+            case AttackType.HoldKick:
+                return animationManager.PlayHoldKick();
+            default:
+                return HitType.HeadPunch;
+        }
+    }
+
+    private (float dame, float delay) GetDamageByHitType(AttackType hitType)
+    {
+        switch (hitType)
+        {
+            case AttackType.Punch:
+                return (damePunch, attackDelay);
+            case AttackType.HoldPunch:
+                return (damePunch, attackDelay);
+            case AttackType.Kick:
+                return (damePunch, attackDelay);
+            case AttackType.HoldKick:
+                return (damePunch, attackDelay);
+        }
+        return (0,0);
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     #region Gizmo Visualization
     /// <summary>

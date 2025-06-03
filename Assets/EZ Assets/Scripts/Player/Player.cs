@@ -31,6 +31,11 @@ public class Player : MonoBehaviour, IPlayerAttack, IPlayerMovement, IMovementIn
     public float holdPunchDelay = 0.9f;
     public float holdKickDelay = 0.35f;
 
+    public float damePunch = 10f;
+    public float dameKick = 15f;
+    public float dameHoldPunch = 20f;
+    public float dameHoldKick = 25f;
+
 
     private CooldownTimer punchTimer;
     private CooldownTimer kickTimer;
@@ -102,7 +107,7 @@ public class Player : MonoBehaviour, IPlayerAttack, IPlayerMovement, IMovementIn
         HitType hitType = (HitType)(animationManager?.PlayHeadPunch());
         punchTimer.Trigger();
 
-        hitReceiver.ReceiveHit(hitType, punchDelay, capsuleHeight, capsuleRadius, enemyLayer);
+        hitReceiver.ReceiveHit(hitType, punchDelay, capsuleHeight, capsuleRadius, damePunch, enemyLayer);
     }
 
 
@@ -118,7 +123,7 @@ public class Player : MonoBehaviour, IPlayerAttack, IPlayerMovement, IMovementIn
         HitType hitType = (HitType)(animationManager?.PlayHoldPunch());
         specialTimer.Trigger();
 
-        hitReceiver.ReceiveHit(hitType, holdPunchDelay, capsuleHeight, capsuleRadius, enemyLayer);
+        hitReceiver.ReceiveHit(hitType, holdPunchDelay, capsuleHeight, capsuleRadius, dameHoldPunch, enemyLayer);
     }
 
     public void Kick()
@@ -130,7 +135,7 @@ public class Player : MonoBehaviour, IPlayerAttack, IPlayerMovement, IMovementIn
         HitType hitType = (HitType)(animationManager?.PlayKick());
         kickTimer.Trigger();
 
-        hitReceiver.ReceiveHit(hitType, kickDelay, capsuleHeight, capsuleRadius, enemyLayer);
+        hitReceiver.ReceiveHit(hitType, kickDelay, capsuleHeight, capsuleRadius, dameKick, enemyLayer);
     }
 
     public void HoldKick()
@@ -141,8 +146,8 @@ public class Player : MonoBehaviour, IPlayerAttack, IPlayerMovement, IMovementIn
         HitType hitType = (HitType)(animationManager?.PlayHoldKick());
         playerMovement?.Jump();
         specialTimer.Trigger();
-        
-        hitReceiver.ReceiveHit(hitType, holdKickDelay, capsuleHeight, capsuleRadius + kickRange, enemyLayer);
+
+        hitReceiver.ReceiveHit(hitType, holdKickDelay, capsuleHeight, capsuleRadius, dameHoldKick, enemyLayer);
     }
 
     public void Jump()

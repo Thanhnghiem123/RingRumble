@@ -13,4 +13,5 @@ public interface IAnimationManager
     void PlayJumpOverIntro();
     HitType PlayKnockedOut();
     void PlayVictory();
+    void PlayDefeat();
 }

@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using Ilumisoft.HealthSystem;
 
 [RequireComponent(typeof(Rigidbody))]
 public abstract class HitReceiver : MonoBehaviour
@@ -10,12 +11,15 @@ public abstract class HitReceiver : MonoBehaviour
     protected float gizmoCapsuleHeight;
     protected float gizmoCapsuleRadius;
     protected Color gizmoColor = new Color(1f, 0f, 0f, 0.5f);
+    protected Health health;
+    protected HealthEnemy healthEnemy;
 
     protected virtual void Awake()
     {
         animationManager = GetComponent<IAnimationManager>();
         rb = GetComponent<Rigidbody>();
         knockbackConfig = GetComponent<KnockbackConfig>();
+        
     }
 
     public virtual void ReceiveHoldPunch()
@@ -28,32 +32,76 @@ public abstract class HitReceiver : MonoBehaviour
         animationManager?.PlayKnockedOut();
     }
 
-    public virtual void ReceiveHit(HitType hitType, float delay, float capsuleHeight, float capsuleRadius, LayerMask enemyLayer)
+    public virtual void ReceiveHit(HitType hitType, float delay, float capsuleHeight, float capsuleRadius, float dame, LayerMask enemyLayer)
     {
-        StartCoroutine(DelayedHitDetection(hitType, delay, capsuleHeight, capsuleRadius, enemyLayer));
+        StartCoroutine(DelayedHitDetection(hitType, delay, capsuleHeight, capsuleRadius, dame, enemyLayer));
         gizmoCapsuleHeight = capsuleHeight;
         gizmoCapsuleRadius = capsuleRadius;
     }
 
-    public IEnumerator DelayedHitDetection(HitType hitType, float delay, float capsuleHeight, float capsuleRadius, LayerMask enemyLayer)
+    public IEnumerator DelayedHitDetection(HitType hitType, float delay, float capsuleHeight, float capsuleRadius,float dame, LayerMask enemyLayer)
     {
         yield return new WaitForSeconds(delay);
+
+        // Kiểm tra xem enemyLayer có chứa layer "Player" hay không
+        int playerLayer = LayerMask.NameToLayer("Player");
         Collider[] hits = DetectColliders(capsuleHeight, capsuleRadius, enemyLayer);
         foreach (var hit in hits)
         {
             Debug.Log($"PlayerHitReceiver: Detected hit on {hit.name} with type {hitType}");
-            var hitReceiver = hit.GetComponent<EnemyHitReceiver>();
-            if (hitReceiver != null)
+            if (((1 << playerLayer) & enemyLayer) != 0)
             {
-                ReceiveHit(hitType, hit.transform);
+                var hitReceiver = hit.GetComponent<PlayerHitReceiver>();
+                if (hitReceiver != null)
+                {
+                Debug.Log($"PlayerHitReceivername; {hitReceiver.gameObject.name}");
+
+                    health = hitReceiver.gameObject.GetComponent<Health>();
+                    ReceiveHit(hitType, dame, hit.transform);
+                }
             }
+            else
+            {
+                var hitReceiver = hit.GetComponent<EnemyHitReceiver>();
+                if (hitReceiver != null)
+                {
+                    healthEnemy = hitReceiver.gameObject.GetComponent<HealthEnemy>();
+                Debug.Log($"EnemyHitReceivername; {hitReceiver.gameObject.name}");
+
+                    ReceiveHit(hitType, dame, hit.transform);
+
+                }
+
+            }
+
         }
     }
 
-    protected virtual void ReceiveHit(HitType hitType, Transform attacker = null)
+    protected virtual void ReceiveHit(HitType hitType, float dame, Transform attacker = null)
     {
         
     }
+
+
+    public bool IsAlive()
+    {
+        if (health != null)
+        {
+            Debug.Log($"IsAlive called on {gameObject.name}. Health: {health.CurrentHealth} IsAlive: {health.IsAlive}");
+            return health.IsAlive;
+        }
+        else if (healthEnemy != null)
+        {
+            Debug.Log($"IsAlive called on {gameObject.name}. HealthEnemy: {healthEnemy.CurrentHealth} IsAlive: {healthEnemy.IsAlive}");
+            return healthEnemy.IsAlive;
+        }
+        else
+        {
+            Debug.Log($"IsAlive called on {gameObject.name}. No health or healthEnemy component found.");
+            return true;
+        }
+    }
+
 
     public virtual bool CanClimb(float capsuleHeight, float capsuleRadius, LayerMask enemyLayer)
     {
@@ -68,6 +116,18 @@ public abstract class HitReceiver : MonoBehaviour
         Vector3 point2 = center - Vector3.up * (capsuleHeight * 0.5f - capsuleRadius);
         return Physics.OverlapCapsule(point1, point2, capsuleRadius, enemyLayer);
     }
+
+
+    ///
+    ///
+    ///
+    ///
+    ///
+    ///
+    ///
+    ///
+
+
 
     protected virtual void OnDrawGizmosSelected()
     {
