@@ -1,33 +1,53 @@
 ﻿using UnityEngine;
 using UnityEngine.AI;
 
-/// <summary>
-/// Điều khiển di chuyển của enemy, không xử lý animation.
-/// </summary>
 [RequireComponent(typeof(NavMeshAgent))]
-public class EnemyMovement : MonoBehaviour, IEnemyMovement
+public class EnemyMovement : MonoBehaviour
 {
     private NavMeshAgent agent;
+    private Transform targetPlayer;
 
     private bool isMoving = false;
+    public bool IsMoving => isMoving;
 
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
     }
 
-
-    public bool IsMoving => isMoving; // Cho phép class khác đọc trạng thái di chuyển
-
-
-
-    public void SetDestination(Vector3 position)
+    void Update()
     {
-        agent.SetDestination(position);
-
-        float speed = agent.velocity.magnitude;
-        isMoving = speed > 0.2f;
+        targetPlayer = FindNearestPlayer();
+        if (targetPlayer != null)
+        {
+            agent.SetDestination(targetPlayer.position);
+            float speed = agent.velocity.magnitude;
+            isMoving = speed > 0.2f;
+        }
+        else
+        {
+            isMoving = false;
+        }
     }
 
-    
+    Transform FindNearestPlayer()
+    {
+        // Đảm bảo GameManager và danh sách player hợp lệ
+        if (GameManager.Instance == null || GameManager.Instance.players == null || GameManager.Instance.players.Count == 0)
+            return null;
+
+        float minDist = float.MaxValue;
+        Transform nearest = null;
+        foreach (var player in GameManager.Instance.players)
+        {
+            if (player == null) continue;
+            float dist = Vector3.Distance(transform.position, player.transform.position);
+            if (dist < minDist)
+            {
+                minDist = dist;
+                nearest = player.transform;
+            }
+        }
+        return nearest;
+    }
 }

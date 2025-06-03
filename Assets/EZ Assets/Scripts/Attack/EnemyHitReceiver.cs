@@ -21,8 +21,8 @@ public class EnemyHitReceiver : HitReceiver
             AnimationManager attackerrAnim = GetComponent<AnimationManager>();
             Rigidbody receiverRb = receiver.GetComponent<Rigidbody>();
 
-            // attacker = enemy
-            // receiver = player
+            
+
             Debug.Log("ISALIVE: " + IsAlive());
             
 
@@ -38,20 +38,22 @@ public class EnemyHitReceiver : HitReceiver
 
                 if (IsAlive() == false)
                 {
+                    // receiver = player
+                    // attacker = enemy
                     receiverAnim?.PlayDefeat();
-                    attackerrAnim?.PlayVictory();
+                    //attackerrAnim?.PlayVictory();
 
                     // Tắt toàn bộ script (MonoBehaviour) trên GameObject của attacker ngoai tru scri
-                    if (attackerrAnim != null)
-                    {
-                        MonoBehaviour[] scripts = attackerrAnim.gameObject.GetComponents<MonoBehaviour>();
-                        foreach (var script in scripts)
-                        {
-                            if (script != null && script != this) // Không tắt chính EnemyHitReceiver nếu cần
-                                script.enabled = false;
-                        }
-                    }
-                    if (receiverAnim != null)
+                    //if (attackerrAnim != null)
+                    //{
+                    //    MonoBehaviour[] scripts = attackerrAnim.gameObject.GetComponents<MonoBehaviour>();
+                    //    foreach (var script in scripts)
+                    //    {
+                    //        if (script != null && script != this) // Không tắt chính EnemyHitReceiver nếu cần
+                    //            script.enabled = false;
+                    //    }
+                    //}
+                    if (receiverAnim != null && receiver.CompareTag("Player"))
                     {
                         MonoBehaviour[] scripts = receiverAnim.gameObject.GetComponents<MonoBehaviour>();
                         foreach (var script in scripts)
@@ -61,7 +63,24 @@ public class EnemyHitReceiver : HitReceiver
                                 script.enabled = false;
                             }
                         }
+                        var Capsule = receiverAnim.GetComponent<CapsuleCollider>();
+                        if (Capsule != null)
+                            Capsule.enabled = false;
+
+                        // Disable all GameObjects in the scene with tag "Canvas"
+                        GameObject[] allCanvasObjects = GameObject.FindGameObjectsWithTag("Canvas");
+
+                        foreach (GameObject go in allCanvasObjects)
+                        {
+                            Debug.Log("Disabling Canvas: " + go.name);
+                            go.SetActive(false);
+                            for (int i = 0; i < go.transform.childCount; i++)
+                            {
+                                go.transform.GetChild(i).gameObject.SetActive(false);
+                            }
+                        }
                     }
+
 
                     Debug.Log("ISALIVEssssss: " + IsAlive());
                     return;

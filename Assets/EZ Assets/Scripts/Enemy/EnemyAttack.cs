@@ -19,7 +19,7 @@ public class EnemyAttack : MonoBehaviour
 
     // Internal state tracking
     private bool playerInAttackRange = false;
-    private float lastAttackTime = 0f;
+    public  float lastAttackTime = 0f;
     private int currentAttackIndex = 0;
     #endregion
 
@@ -100,11 +100,13 @@ public class EnemyAttack : MonoBehaviour
 
         // Check if player is in attack range using capsule overlap
         playerInAttackRange = IsPlayerInAttackRange();
-        
+        //Debug.Log("playerInAttackRange:" + playerInAttackRange);
         if (playerInAttackRange && Time.time >= lastAttackTime + attackCooldown)
         {
-            PerformAttack();
             lastAttackTime = Time.time;
+            Debug.Log("Player in attack range, performing attack" + lastAttackTime);
+            PerformAttack();
+            
             
         }
     }
