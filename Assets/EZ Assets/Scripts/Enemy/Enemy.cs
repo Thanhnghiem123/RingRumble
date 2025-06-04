@@ -9,14 +9,14 @@ public class Enemy : MonoBehaviour
 {
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     private IAnimationManager animationManager;
-    private EnemyMovement enemyMovement;
+    private IEnemyMovement enemyMovement;
     private bool lastIsMoving = false;
 
     void Start()
     {
 
         animationManager = GetComponent<IAnimationManager>();
-        enemyMovement = GetComponent<EnemyMovement>();
+        enemyMovement = GetComponent<IEnemyMovement>();
     }
 
     // Update is called once per frame
@@ -25,14 +25,9 @@ public class Enemy : MonoBehaviour
 
         if (enemyMovement == null || animationManager == null)
             return;
+        enemyMovement.Movement();
 
         // Kiểm tra trạng thái di chuyển và gọi animation tương ứng
-        if (enemyMovement.IsMoving != lastIsMoving)
-        {
-            lastIsMoving = enemyMovement.IsMoving;
-            animationManager.PlayRun(lastIsMoving);
-            if (!lastIsMoving)
-                animationManager.PlayIdle();
-        }
+        
     }
 }

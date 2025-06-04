@@ -14338,6 +14338,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: CharMain_01
       objectReference: {fileID: 0}
+    - target: {fileID: 4289722486823969361, guid: 6e70ac2dd964f7e4798ba322509c7e7a, type: 3}
+      propertyPath: jumpForce
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 4289722486823969361, guid: 6e70ac2dd964f7e4798ba322509c7e7a, type: 3}
+      propertyPath: ropesLayer.m_Bits
+      value: 128
+      objectReference: {fileID: 0}
     - target: {fileID: 5532893504157818353, guid: 6e70ac2dd964f7e4798ba322509c7e7a, type: 3}
       propertyPath: cameraTransform
       value: 
@@ -14350,6 +14358,10 @@ PrefabInstance:
       propertyPath: fillImage
       value: 
       objectReference: {fileID: 1202020508}
+    - target: {fileID: 7618532433591576211, guid: 6e70ac2dd964f7e4798ba322509c7e7a, type: 3}
+      propertyPath: enemyLayer.m_Bits
+      value: 64
+      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 8540365271846808698, guid: 6e70ac2dd964f7e4798ba322509c7e7a, type: 3}
     m_RemovedGameObjects: []

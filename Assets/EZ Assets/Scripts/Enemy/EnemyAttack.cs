@@ -1,18 +1,20 @@
 ﻿using System.Collections;
 using Ilumisoft.HealthSystem;
 using UnityEngine;
+using UnityEngine.AI;
 
 /// <summary>
 /// Manages enemy combat behaviors including attack detection and animation triggering
 /// </summary>
 [RequireComponent(typeof(EnemyMovement))]
-public class EnemyAttack : MonoBehaviour
+public class EnemyAttack : MonoBehaviour, IEnemyAttack
 {
     #region Private Fields
     private Transform player;
     private EnemyMovement enemyMovement;
     private IAnimationManager animationManager;
     private EnemyHitReceiver hitReceiver;
+    private NavMeshAgent agent;
 
     // References to detect player
     private int playerLayerMask;
@@ -58,6 +60,19 @@ public class EnemyAttack : MonoBehaviour
     [Tooltip("Chance to perform a kick instead of punch (0-1)")]
     [Range(0, 1)]
     public float kickChance = 0.4f;
+
+    float IEnemyAttack.damePunch { get => damePunch; set => damePunch = value; }
+    float IEnemyAttack.dameHoldPunch { get => dameHoldPunch; set => dameHoldPunch = value; }
+    float IEnemyAttack.dameKick { get => dameKick; set => dameKick = value; }
+    float IEnemyAttack.dameHoldKick { get => dameHoldKick; set => dameHoldKick = value; }
+    float IEnemyAttack.stoppingDistance { get => stoppingDistance; set => stoppingDistance = value; }
+    float IEnemyAttack.capsuleHeight { get => capsuleHeight; set => capsuleHeight = value; }
+    float IEnemyAttack.capsuleRadius { get => capsuleRadius; set => capsuleRadius = value; }
+    float IEnemyAttack.attackCooldown { get => attackCooldown; set => attackCooldown = value; }
+    float IEnemyAttack.attackDelay { get => attackDelay; set => attackDelay = value; }
+    bool IEnemyAttack.randomizeAttacks { get => randomizeAttacks; set => randomizeAttacks = value; }
+    float IEnemyAttack.holdAttackChance { get => holdAttackChance; set => holdAttackChance = value; }
+    float IEnemyAttack.kickChance { get => kickChance; set => kickChance = value; }
     #endregion
 
     #region Initialization
@@ -72,6 +87,7 @@ public class EnemyAttack : MonoBehaviour
         // Find player and setup layer mask
         player = GameObject.FindGameObjectWithTag("Player")?.transform;
         playerLayerMask = LayerMask.GetMask("Player");
+        agent = GetComponent<NavMeshAgent>();
 
         // Verify required components
         if (enemyMovement == null)
@@ -89,7 +105,7 @@ public class EnemyAttack : MonoBehaviour
     #endregion
 
     #region Update Logic
-    void Update()
+    public void Attack()
     {
         if (player == null) return;
 
@@ -104,6 +120,7 @@ public class EnemyAttack : MonoBehaviour
         //Debug.Log("playerInAttackRange:" + playerInAttackRange);
         if (playerInAttackRange && Time.time >= lastAttackTime + attackCooldown)
         {
+            agent.isStopped = true; // Stop the agent to perform attack
             lastAttackTime = Time.time;
             Debug.Log("Player in attack range, performing attack" + lastAttackTime);
             PerformAttack();
@@ -117,7 +134,7 @@ public class EnemyAttack : MonoBehaviour
     /// <summary>
     /// Updates the stopping distance in NavMeshAgent based on player proximity
     /// </summary>
-    private void UpdateStoppingDistance(float distanceToPlayer)
+    public  void UpdateStoppingDistance(float distanceToPlayer)
     {
         if (distanceToPlayer <= stoppingDistance)
         {
@@ -154,7 +171,7 @@ public class EnemyAttack : MonoBehaviour
     /// <summary>
     /// Checks if player is within attack range using a capsule overlap
     /// </summary>
-    private bool IsPlayerInAttackRange()
+    public bool IsPlayerInAttackRange()
     {
         // Calculate capsule endpoints
         Vector3 center = transform.position + transform.forward * capsuleRadius;
@@ -182,7 +199,7 @@ public class EnemyAttack : MonoBehaviour
     /// <summary>
     /// Perform an attack based on configured probabilities
     /// </summary>
-    private void PerformAttack()
+    public void PerformAttack()
     {
         // Determine attack type based on probabilities or sequence
         AttackType attackType = DetermineAttackType();
@@ -194,7 +211,7 @@ public class EnemyAttack : MonoBehaviour
     /// <summary>
     /// Determines which attack to perform based on configuration
     /// </summary>
-    private AttackType DetermineAttackType()
+    public AttackType DetermineAttackType()
     {
         if (randomizeAttacks)
         {
@@ -224,7 +241,7 @@ public class EnemyAttack : MonoBehaviour
     /// <summary>
     /// Executes the selected attack type and performs hit detection
     /// </summary>
-    private void ExecuteAttack(AttackType attackType)
+    public void ExecuteAttack(AttackType attackType)
     {
         HitType hitType = PlayAttackAnimation(attackType);
         (float dame, float delay) = GetDamageByHitType(attackType);
@@ -233,13 +250,10 @@ public class EnemyAttack : MonoBehaviour
         hitReceiver.ReceiveHit(hitType, delay, capsuleHeight, capsuleRadius, dame, playerLayerMask);
 
     }
-    #endregion
-
-    #region Helper Types
     /// <summary>
     /// Enum representing different attack types the enemy can perform
     /// </summary>
-    private enum AttackType
+    public enum AttackType
     {
         Punch = 0,
         HoldPunch = 1,
@@ -249,7 +263,7 @@ public class EnemyAttack : MonoBehaviour
     #endregion
 
 
-    private HitType PlayAttackAnimation(AttackType attackType)
+    public HitType PlayAttackAnimation(AttackType attackType)
     {
         switch (attackType)
         {
@@ -266,7 +280,7 @@ public class EnemyAttack : MonoBehaviour
         }
     }
 
-    private (float dame, float delay) GetDamageByHitType(AttackType hitType)
+    public (float dame, float delay) GetDamageByHitType(AttackType hitType)
     {
         switch (hitType)
         {
@@ -287,8 +301,7 @@ public class EnemyAttack : MonoBehaviour
 
 
 
-
-
+ 
 
 
 
@@ -339,5 +352,7 @@ public class EnemyAttack : MonoBehaviour
         Gizmos.DrawLine(p1 + forward * radius, p2 + forward * radius);
         Gizmos.DrawLine(p1 - forward * radius, p2 - forward * radius);
     }
+
+   
     #endregion
 }
