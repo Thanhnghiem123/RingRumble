@@ -3,5 +3,6 @@
 public interface IEnemyMovement
 {
     bool IsMoving { get; }
-    void SetDestination(Vector3 position);
+    void SetTarget(Transform target);
+    Transform FindNearestPlayer();
 }

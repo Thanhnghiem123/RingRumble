@@ -112,6 +112,8 @@ public class Player : MonoBehaviour
     {
         if (!isInitialized) return;
 
+        playerMovement.IsGrounded(); // Cập nhật trạng thái chạm đất
+
         movementInput.ProcessInput();
         if (movementInput.IsMoving())
         {

@@ -2,7 +2,7 @@
 using UnityEngine.AI;
 
 [RequireComponent(typeof(NavMeshAgent))]
-public class EnemyMovement : MonoBehaviour
+public class EnemyMovement : MonoBehaviour, IEnemyMovement
 {
     private NavMeshAgent agent;
     private Transform targetPlayer;
@@ -17,8 +17,9 @@ public class EnemyMovement : MonoBehaviour
 
     void Update()
     {
-        targetPlayer = FindNearestPlayer();
-        
+        if (targetPlayer == null)
+            targetPlayer = FindNearestPlayer();
+
         if (targetPlayer != null)
         {
             agent.SetDestination(targetPlayer.position);
@@ -31,12 +32,16 @@ public class EnemyMovement : MonoBehaviour
         }
     }
 
-    Transform FindNearestPlayer()
+    public void SetTarget(Transform target)
     {
-        // Đảm bảo GameManager và danh sách player hợp lệ
+        targetPlayer = target;
+    }
+
+    public Transform FindNearestPlayer()
+    {
         if (GameManager.Instance == null || GameManager.Instance.players == null || GameManager.Instance.players.Count == 0)
             return null;
-        Debug.Log("Target Player: " + (targetPlayer != null ? targetPlayer.position : "None"));
+
         float minDist = float.MaxValue;
         Transform nearest = null;
         foreach (var player in GameManager.Instance.players)

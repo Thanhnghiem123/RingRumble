@@ -42,7 +42,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerMovement
     private PlayerAttack playerAttack;
     private IMovementInput movementInput;
 
-    public bool IsGrounded() => isGrounded; // Thuộc tính để kiểm tra trạng thái chạm đất
+    public bool IsGrounded() => isGrounded = Physics.Raycast(transform.position, Vector3.down, groundCheckDistance, groundLayer); // Thuộc tính để kiểm tra trạng thái chạm đất
 
     void Start()
     {
@@ -83,11 +83,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerMovement
         }
     }
 
-    void Update()
-    {
-        // Kiểm tra xem player có chạm đất không
-        isGrounded = Physics.Raycast(transform.position, Vector3.down, groundCheckDistance, groundLayer);
-    }
+
 
 
     public bool CanClimb(float capsuleHeight, float capsuleRadius)
