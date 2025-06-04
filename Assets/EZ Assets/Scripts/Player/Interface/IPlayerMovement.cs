@@ -7,4 +7,5 @@ public interface IPlayerMovement
     void Jump();
     void JumpOverIntro();
     bool IsGrounded();
+    bool CanClimb(float capsuleHeight, float capsuleRadius);
 }

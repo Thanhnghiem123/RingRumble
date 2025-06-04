@@ -31,6 +31,12 @@ public class PlayerMovement : MonoBehaviour, IPlayerMovement
     [Tooltip("Thời gian thực hiện hoàn tất động tác trèo")]
     public float climbDuration = 1f; // Thời gian để trèo
 
+
+    [Header("LayerMask")]
+    public LayerMask ropesLayer;
+    private PlayerHitReceiver hitReceiver;
+
+
     private IAnimationManager animationManager;
     private Rigidbody rb;
     private PlayerAttack playerAttack;
@@ -70,6 +76,11 @@ public class PlayerMovement : MonoBehaviour, IPlayerMovement
         {
             Debug.LogError("MovementInput component not found on " + gameObject.name);
         }
+        hitReceiver = GetComponent<PlayerHitReceiver>();
+        if (hitReceiver == null)
+        {
+            Debug.LogError("HitReceiver component not found on " + gameObject.name);
+        }
     }
 
     void Update()
@@ -78,7 +89,14 @@ public class PlayerMovement : MonoBehaviour, IPlayerMovement
         isGrounded = Physics.Raycast(transform.position, Vector3.down, groundCheckDistance, groundLayer);
     }
 
-    
+
+    public bool CanClimb(float capsuleHeight, float capsuleRadius)
+    {
+        Collider[] hits = hitReceiver.DetectColliders(capsuleHeight, capsuleRadius, ropesLayer);
+        Debug.Log($"CanClimb: Detected {hits.Length} hits on ropes layer.");
+        return hits.Length > 0;
+    }
+
     /// <summary>
     /// Di chuyển nhân vật dựa trên đầu vào từ người chơi.
     /// </summary>

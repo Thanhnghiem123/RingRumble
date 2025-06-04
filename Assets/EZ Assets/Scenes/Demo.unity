@@ -14350,7 +14350,8 @@ PrefabInstance:
       propertyPath: fillImage
       value: 
       objectReference: {fileID: 1202020508}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 8540365271846808698, guid: 6e70ac2dd964f7e4798ba322509c7e7a, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []

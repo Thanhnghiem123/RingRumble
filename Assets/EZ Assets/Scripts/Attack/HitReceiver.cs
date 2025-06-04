@@ -103,13 +103,9 @@ public abstract class HitReceiver : MonoBehaviour
     }
 
 
-    public virtual bool CanClimb(float capsuleHeight, float capsuleRadius, LayerMask enemyLayer)
-    {
-        Collider[] hits = DetectColliders(capsuleHeight, capsuleRadius, enemyLayer);
-        return hits.Length > 0;
-    }
+    
 
-    protected virtual Collider[] DetectColliders(float capsuleHeight, float capsuleRadius, LayerMask enemyLayer)
+    public virtual Collider[] DetectColliders(float capsuleHeight, float capsuleRadius, LayerMask enemyLayer)
     {
         Vector3 center = transform.position + transform.forward * capsuleRadius;
         Vector3 point1 = center + Vector3.up * (capsuleHeight * 0.5f - capsuleRadius);

@@ -2,6 +2,7 @@
 using System.Collections;
 using Ilumisoft.HealthSystem;
 using Ilumisoft.HealthSystem.UI;
+using ComicUI;
 
 public class PlayerHitReceiver : HitReceiver
 {
@@ -52,33 +53,37 @@ public class PlayerHitReceiver : HitReceiver
                     GameManager.Instance.RemoveEnemy(receiverAnim.gameObject);
                     if (GameManager.Instance.CheckEnemyCount() == false)
                     {
+
+                        if (receiverAnim != null)
+                        {
+                            MonoBehaviour[] scripts = receiverAnim.gameObject.GetComponents<MonoBehaviour>();
+                            foreach (var script in scripts)
+                            {
+                                if (script != null && script != this && !(script is PlayerHealthbar))
+                                {
+                                    script.enabled = false;
+                                }
+                            }
+
+                            var Capsule = receiverAnim.GetComponent<CapsuleCollider>();
+                            if (Capsule != null)
+                                Capsule.enabled = false;
+
+                            var rb = receiverAnim.GetComponent<Rigidbody>();
+                            if (rb != null)
+                                rb.constraints |= RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionY | RigidbodyConstraints.FreezePositionZ;
+                        }
+                        Debug.Log("ISALIVEssssss: " + IsAlive());
+
+
                         attackerrAnim?.PlayVictory();
+                        receiverAnim?.PlayDefeat();
                         GameManager.Instance.LoadSceneAfterDelay("SampleScene", 5f);
                         return;
                     }
-                    receiverAnim?.PlayDefeat();
-                    if (receiverAnim != null)
-                    {
-                        MonoBehaviour[] scripts = receiverAnim.gameObject.GetComponents<MonoBehaviour>();
-                        foreach (var script in scripts)
-                        {
-                            if (script != null && script != this && !(script is PlayerHealthbar))
-                            {
-                                script.enabled = false;
-                            }
-                        }
+                    
+                    
 
-                        var Capsule = receiverAnim.GetComponent<CapsuleCollider>();
-                        if (Capsule != null)
-                            Capsule.enabled = false;
-
-                        var rb = receiverAnim.GetComponent<Rigidbody>();
-                        if (rb != null)
-                            rb.constraints |= RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionY | RigidbodyConstraints.FreezePositionZ;
-                    }
-                    Debug.Log("ISALIVEssssss: " + IsAlive());
-
-                    return;
                 }
             }
         }

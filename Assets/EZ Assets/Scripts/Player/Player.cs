@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 using UnityEngine;
-public class Player : MonoBehaviour, IPlayerAttack, IPlayerMovement, IMovementInput
+public class Player : MonoBehaviour
 {
 
     [Header("Cooldown Settings")]
@@ -16,26 +16,29 @@ public class Player : MonoBehaviour, IPlayerAttack, IPlayerMovement, IMovementIn
     public float specialAttackCooldown;
 
 
-    [Header("Attack Settings")]
-    public float capsuleHeight = 2f;
-    public float capsuleRadius = 0.35f;
-    public float kickRange = 0.65f;
-
-    public LayerMask enemyLayer;
-    public LayerMask ropesLayer; 
+    //[Header("Attack Settings")]
+    //public float capsuleHeight = 2f;
+    //public float capsuleRadius = 0.35f;
+    
 
 
-    [Header("Attack Delay Settings")]
-    public float punchDelay = 0.2f;
-    public float kickDelay = 0.25f;
-    public float holdPunchDelay = 0.9f;
-    public float holdKickDelay = 0.35f;
 
-    public float damePunch = 10f;
-    public float dameKick = 15f;
-    public float dameHoldPunch = 20f;
-    public float dameHoldKick = 25f;
 
+    //[Header("Attack Delay Settings")]
+    //public float punchDelay = 0.2f;
+    //public float kickDelay = 0.25f;
+    //public float holdPunchDelay = 0.9f;
+    //public float holdKickDelay = 0.35f;
+
+    //public float damePunch = 10f;
+    //public float dameKick = 15f;
+    //public float dameHoldPunch = 20f;
+    //public float dameHoldKick = 25f;
+    //public float kickRange = 0.65f;
+
+
+    //public LayerMask enemyLayer;
+    //public LayerMask ropesLayer;
 
     private CooldownTimer punchTimer;
     private CooldownTimer kickTimer;
@@ -48,15 +51,16 @@ public class Player : MonoBehaviour, IPlayerAttack, IPlayerMovement, IMovementIn
     private IPlayerAttack playerAttack;
     private IPlayerMovement playerMovement;
     private IMovementInput movementInput;
-    private PlayerHitReceiver hitReceiver;
+    //private PlayerHitReceiver hitReceiver;
+    private bool isInitialized = false;
 
     // getters , setter
-    public float PunchDelay { get => punchDelay; set => punchDelay = value; }
-    public float KickDelay { get => kickDelay; set => kickDelay = value; }
-    public float HoldPunchDelay { get => holdPunchDelay; set => holdPunchDelay = value; }
-    public float HoldKickDelay { get => holdKickDelay; set => holdKickDelay = value; }
-    public float CapsuleHeight { get => capsuleHeight; set => capsuleHeight = value; }
-    public float CapsuleRadius { get => capsuleRadius; set => capsuleRadius = value; }
+    //public float PunchDelay { get => punchDelay; set => punchDelay = value; }
+    //public float KickDelay { get => kickDelay; set => kickDelay = value; }
+    //public float HoldPunchDelay { get => holdPunchDelay; set => holdPunchDelay = value; }
+    //public float HoldKickDelay { get => holdKickDelay; set => holdKickDelay = value; }
+    //public float CapsuleHeight { get => capsuleHeight; set => capsuleHeight = value; }
+    //public float CapsuleRadius { get => capsuleRadius; set => capsuleRadius = value; }
 
     void Start()
     {
@@ -81,10 +85,17 @@ public class Player : MonoBehaviour, IPlayerAttack, IPlayerMovement, IMovementIn
         {
             Debug.LogError("MovementInput component not found on " + gameObject.name);
         }
-        hitReceiver = GetComponent<PlayerHitReceiver>();
-        if (hitReceiver == null)
+        //hitReceiver = GetComponent<PlayerHitReceiver>();
+        //if (hitReceiver == null)
+        //{
+        //    Debug.LogError("HitReceiver component not found on " + gameObject.name);
+        //}
+
+        isInitialized = (movementInput != null);
+        if (!isInitialized)
         {
-            Debug.LogError("HitReceiver component not found on " + gameObject.name);
+            Debug.LogError("PlayerController initialization failed. Disabling script.");
+            enabled = false;
         }
 
         punchTimer = new CooldownTimer(punchCooldown);
@@ -97,6 +108,20 @@ public class Player : MonoBehaviour, IPlayerAttack, IPlayerMovement, IMovementIn
             $"Punch: {punchCooldown}s, Kick: {kickCooldown}s, Jump: {jumpCooldown}s, Special: {specialAttackCooldown}s, Climb: {climbCooldown}s");
     }
 
+    void Update()
+    {
+        if (!isInitialized) return;
+
+        movementInput.ProcessInput();
+        if (movementInput.IsMoving())
+        {
+            Move();
+        }
+        else
+        {
+            Stop();
+        }
+    }
 
     public void Punch()
     {
@@ -107,7 +132,7 @@ public class Player : MonoBehaviour, IPlayerAttack, IPlayerMovement, IMovementIn
         HitType hitType = (HitType)(animationManager?.PlayHeadPunch());
         punchTimer.Trigger();
 
-        hitReceiver.ReceiveHit(hitType, punchDelay, capsuleHeight, capsuleRadius, damePunch, enemyLayer);
+        playerAttack.Punch(hitType);
     }
 
 
@@ -123,7 +148,7 @@ public class Player : MonoBehaviour, IPlayerAttack, IPlayerMovement, IMovementIn
         HitType hitType = (HitType)(animationManager?.PlayHoldPunch());
         specialTimer.Trigger();
 
-        hitReceiver.ReceiveHit(hitType, holdPunchDelay, capsuleHeight, capsuleRadius, dameHoldPunch, enemyLayer);
+        playerAttack.HoldPunch(hitType);
     }
 
     public void Kick()
@@ -135,7 +160,7 @@ public class Player : MonoBehaviour, IPlayerAttack, IPlayerMovement, IMovementIn
         HitType hitType = (HitType)(animationManager?.PlayKick());
         kickTimer.Trigger();
 
-        hitReceiver.ReceiveHit(hitType, kickDelay, capsuleHeight, capsuleRadius, dameKick, enemyLayer);
+        playerAttack.Kick(hitType);
     }
 
     public void HoldKick()
@@ -147,7 +172,7 @@ public class Player : MonoBehaviour, IPlayerAttack, IPlayerMovement, IMovementIn
         playerMovement?.Jump();
         specialTimer.Trigger();
 
-        hitReceiver.ReceiveHit(hitType, holdKickDelay, capsuleHeight, capsuleRadius, dameHoldKick, enemyLayer);
+        playerAttack.HoldKick(hitType);
     }
 
     public void Jump()
@@ -165,7 +190,7 @@ public class Player : MonoBehaviour, IPlayerAttack, IPlayerMovement, IMovementIn
         // Giảm thời gian cooldown cho nhảy qua intro
         
 
-        if(hitReceiver.CanClimb(capsuleHeight, capsuleRadius, ropesLayer))
+        if(playerMovement.CanClimb(2, 0.35f))
         {
             if (!climbTimer.IsReady) return;
             if (!specialTimer.IsReady) return;
@@ -173,8 +198,9 @@ public class Player : MonoBehaviour, IPlayerAttack, IPlayerMovement, IMovementIn
             animationManager?.PlayJumpOverIntro();
             playerMovement?.JumpOverIntro(); // Gọi vật lý nhảy qua intro từ PlayerMovement
             // Kích hoạt cooldown cho nhảy qua intro
+            climbTimer.Trigger();
         }
-        climbTimer.Trigger();
+        
     }
 
     public bool Block()

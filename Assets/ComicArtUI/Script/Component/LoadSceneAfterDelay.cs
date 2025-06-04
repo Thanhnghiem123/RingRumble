@@ -10,12 +10,28 @@ namespace ComicUI
         public string sceneName;
         public Image loadingImage;
 
+
+        public static LoadSceneAfterDelay Instance { get; private set; }
+
+        private void Awake()
+        {
+            if (Instance == null)
+            {
+                Instance = this;
+                DontDestroyOnLoad(gameObject);
+            }
+            else
+            {
+                Destroy(gameObject);
+            }
+        }
+
         void Start()
         {
             StartCoroutine(LoadSceneDelay());
         }
 
-        private IEnumerator LoadSceneDelay()
+        public IEnumerator LoadSceneDelay()
         {
             float duration = 2f;
             float count = 0;

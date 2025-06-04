@@ -4,14 +4,14 @@ using UnityEngine;
 public interface IPlayerAttack
 {
     bool IsBlocking();
-    void Punch();
-    void HoldPunch();
-
-    void Kick();
-    void HoldKick();
     bool Block();
     bool UnBlock();
+    void Punch(HitType hitType);
+    void HoldPunch(HitType hitType);
 
-    void Jump();
-    void JumpOverIntro();
+    void Kick(HitType hitType);
+    void HoldKick(HitType hitType);
+
+
+
 }

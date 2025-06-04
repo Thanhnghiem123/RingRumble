@@ -3,19 +3,46 @@ using UnityEngine;
 
 public class LevelData : MonoBehaviour
 {
-    public int LevelNumber;
+    [Range(1, 10)]
+    public int levelData;
+    public float enemyHealth;
+    public float enemyDamePunch;
+    public float enemyDameKick;
+    public float enemySpeed;
+    public float enemyAttackCooldown;
 
-    public int EnemyCount;
-    public float EnemyHealth;
-    public float EnemySpeed;
-    // Add more parameters as needed
+    public float playerHealth;
+    public float playerDamePunch;
+    public float playerDameKick;
+    public float playerSpeed;
+    public float playerAttackCooldown;
 
-    public LevelData(int levelNumber, int enemyCount, float enemyHealth, float enemySpeed)
+    public LevelData(int levelData, float enemyHealth, float enemyDamePunch, float enemyDameKick,
+                     float enemySpeed, float enemyAttackCooldown,
+                     float playerHealth, float playerDamePunch, float playerDameKick,
+                     float playerSpeed, float playerAttackCooldown)
     {
-        LevelNumber = levelNumber;
-        EnemyCount = enemyCount;
-        EnemyHealth = enemyHealth;
-        EnemySpeed = enemySpeed;
+        this.levelData = levelData;
+        this.enemyHealth = enemyHealth;
+        this.enemyDamePunch = enemyDamePunch;
+        this.enemyDameKick = enemyDameKick;
+        this.enemySpeed = enemySpeed;
+        this.enemyAttackCooldown = enemyAttackCooldown;
+        this.playerHealth = playerHealth;
+        this.playerDamePunch = playerDamePunch;
+        this.playerDameKick = playerDameKick;
+        this.playerSpeed = playerSpeed;
+        this.playerAttackCooldown = playerAttackCooldown;
     }
 }
 
+
+
+
+
+///
+/// health (min: 100)
+/// speed (min: 0.5
+/// dame (punch, holdpunch, kick, holdkick)
+/// attackCooldown (max = 5
+///
