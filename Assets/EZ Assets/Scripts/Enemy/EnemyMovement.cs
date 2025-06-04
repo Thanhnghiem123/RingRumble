@@ -7,7 +7,7 @@ public class EnemyMovement : MonoBehaviour
     private NavMeshAgent agent;
     private Transform targetPlayer;
 
-    private bool isMoving = false;
+    public bool isMoving = false;
     public bool IsMoving => isMoving;
 
     void Start()
@@ -18,6 +18,7 @@ public class EnemyMovement : MonoBehaviour
     void Update()
     {
         targetPlayer = FindNearestPlayer();
+        
         if (targetPlayer != null)
         {
             agent.SetDestination(targetPlayer.position);
@@ -35,7 +36,7 @@ public class EnemyMovement : MonoBehaviour
         // Đảm bảo GameManager và danh sách player hợp lệ
         if (GameManager.Instance == null || GameManager.Instance.players == null || GameManager.Instance.players.Count == 0)
             return null;
-
+        Debug.Log("Target Player: " + (targetPlayer != null ? targetPlayer.position : "None"));
         float minDist = float.MaxValue;
         Transform nearest = null;
         foreach (var player in GameManager.Instance.players)

@@ -4,8 +4,8 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     public GameMode gameMode;
-    public List<Player> players = new List<Player>();
-    public List<Enemy> enemies = new List<Enemy>();
+    public List<GameObject> players = new List<GameObject>();
+    public List<GameObject> enemies = new List<GameObject>();
 
     [Header("Prefabs")]
     public GameObject playerPrefab;
@@ -32,9 +32,12 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
+        playerCount = playerCount - 1;
         SetupGameMode();
         SpawnPlayersInArea(playerCount);
         SpawnEnemiesInArea(enemyCount);
+        
+
     }
 
     void SetupGameMode()
@@ -42,9 +45,11 @@ public class GameManager : MonoBehaviour
         switch (gameMode)
         {
             case GameMode.OneVsOne:
+                playerCount = 0;
                 enemyCount = 1;
                 break;
             case GameMode.OneVsMany:
+                playerCount = 0;
                 break;
             case GameMode.ManyVsMany:
                 break;
@@ -58,11 +63,12 @@ public class GameManager : MonoBehaviour
             Vector3 randomOffset = Random.insideUnitCircle * playerSpawnRadius;
             Vector3 spawnPos = playerSpawnPoint.position + new Vector3(randomOffset.x, 0, randomOffset.y);
             GameObject playerObj = Instantiate(playerPrefab, spawnPos, playerSpawnPoint.rotation);
-            Player playerComponent = playerObj.GetComponent<Player>();
-            if (playerComponent != null)
-            {
-                players.Add(playerComponent);
-            }
+            playerObj.SetActive(true); // Đảm bảo player được kích hoạt
+            //Player playerComponent = playerObj.GetComponent<Player>();
+            //if (playerComponent != null)
+            //{
+                players.Add(playerObj);
+            //}
         }
     }
 
@@ -77,11 +83,20 @@ public class GameManager : MonoBehaviour
             GameObject prefab = enemyPrefab[randomIndex];
 
             GameObject enemyObj = Instantiate(prefab, spawnPos, enemySpawnPoint.rotation);
-            Enemy enemyComponent = enemyObj.GetComponent<Enemy>();
-            if (enemyComponent != null)
-            {
-                enemies.Add(enemyComponent);
-            }
+            //Enemy enemyComponent = enemyObj.GetComponent<Enemy>();
+            //if (enemyComponent != null)
+            //{
+            enemies.Add(enemyObj);
+            //}
         }
     }
+
+    public void RemovePlayer(GameObject player)
+    {
+        if (players.Contains(player))
+        {
+            players.Remove(player);
+        }
+    }
+
 }

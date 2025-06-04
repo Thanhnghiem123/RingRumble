@@ -53,7 +53,7 @@ public class EnemyHitReceiver : HitReceiver
                     //            script.enabled = false;
                     //    }
                     //}
-                    if (receiverAnim != null && receiver.CompareTag("Player"))
+                    if (receiverAnim != null)
                     {
                         MonoBehaviour[] scripts = receiverAnim.gameObject.GetComponents<MonoBehaviour>();
                         foreach (var script in scripts)
@@ -66,19 +66,30 @@ public class EnemyHitReceiver : HitReceiver
                         var Capsule = receiverAnim.GetComponent<CapsuleCollider>();
                         if (Capsule != null)
                             Capsule.enabled = false;
-
-                        // Disable all GameObjects in the scene with tag "Canvas"
-                        GameObject[] allCanvasObjects = GameObject.FindGameObjectsWithTag("Canvas");
-
-                        foreach (GameObject go in allCanvasObjects)
+                        if (!IsAlive())
                         {
-                            Debug.Log("Disabling Canvas: " + go.name);
-                            go.SetActive(false);
-                            for (int i = 0; i < go.transform.childCount; i++)
+                            GameManager.Instance.RemovePlayer(receiverAnim.gameObject);
+                             //... các logic chết khác
+                        }
+
+                        if (receiver.CompareTag("Player"))
+                        {
+                            attackerrAnim?.PlayVictory();
+
+                            // Disable all GameObjects in the scene with tag "Canvas"
+                            GameObject[] allCanvasObjects = GameObject.FindGameObjectsWithTag("Canvas");
+
+                            foreach (GameObject go in allCanvasObjects)
                             {
-                                go.transform.GetChild(i).gameObject.SetActive(false);
+                                Debug.Log("Disabling Canvas: " + go.name);
+                                go.SetActive(false);
+                                for (int i = 0; i < go.transform.childCount; i++)
+                                {
+                                    go.transform.GetChild(i).gameObject.SetActive(false);
+                                }
                             }
                         }
+                        
                     }
 
 
