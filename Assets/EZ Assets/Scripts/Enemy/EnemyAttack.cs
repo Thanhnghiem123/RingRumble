@@ -25,10 +25,10 @@ public class EnemyAttack : MonoBehaviour
 
     #region Inspector Fields
     [Header("Enemy Combat Settings")]
-    public float damePunch = 20f;
-    public float dameHoldPunch = 20f;
-    public float dameKick = 20f;
-    public float dameHoldKick = 20f;
+    public float damePunch;
+    public float dameHoldPunch;
+    public float dameKick ;
+    public float dameHoldKick;
 
 
     [Header("Detection Settings")]
@@ -63,6 +63,7 @@ public class EnemyAttack : MonoBehaviour
     #region Initialization
     void Start()
     {
+        
         // Find required components
         enemyMovement = GetComponent<EnemyMovement>();
         animationManager = GetComponent<IAnimationManager>();

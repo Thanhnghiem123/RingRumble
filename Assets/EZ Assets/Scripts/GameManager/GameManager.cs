@@ -1,5 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+
 
 public class GameManager : MonoBehaviour
 {
@@ -17,6 +20,8 @@ public class GameManager : MonoBehaviour
     public float playerSpawnRadius = 1f; // Bán kính spawn player
     public float enemySpawnRadius = 1f;  // Bán kính spawn enemy
 
+    
+
     [Header("Spawn Settings")]
     [Range(0, 10)]
     public int playerCount = 1;
@@ -33,15 +38,25 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         playerCount = playerCount - 1;
-        SetupGameMode();
+        //int mode = (int)gameMode;
+        int mode = PlayerPrefs.GetInt("GameMode", (int)gameMode);
+        gameMode = (GameMode)mode;
+        SetupGameMode(mode);
         SpawnPlayersInArea(playerCount);
         SpawnEnemiesInArea(enemyCount);
         
 
     }
 
-    void SetupGameMode()
+
+
+
+    public void SetupGameMode(int gameModenew)
     {
+        gameMode = (GameMode)gameModenew; // Ép kiểu int sang enum
+        PlayerPrefs.SetInt("GameMode", (int)gameMode);
+        PlayerPrefs.Save();
+        Debug.Log("mode: " + gameMode);
         switch (gameMode)
         {
             case GameMode.OneVsOne:
@@ -97,6 +112,39 @@ public class GameManager : MonoBehaviour
         {
             players.Remove(player);
         }
+    }
+
+    public void RemoveEnemy(GameObject enemy)
+    {
+        if (enemies.Contains(enemy))
+        {
+            enemies.Remove(enemy);
+        }
+    }
+    public void LoadSceneAfterDelay(string sceneName, float delay)
+    {
+        StartCoroutine(LoadSceneCoroutine(sceneName, delay));
+    }
+
+    private IEnumerator LoadSceneCoroutine(string sceneName, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        SceneManager.LoadScene(sceneName);
+    }
+
+    public bool CheckEnemyCount()
+    {
+        return enemies.Count > 0;
+    }
+
+    public void StopTime()
+    {
+        Time.timeScale = 0f;
+    }
+
+    public void ResumeTime()
+    {
+        Time.timeScale = 1f;
     }
 
 }

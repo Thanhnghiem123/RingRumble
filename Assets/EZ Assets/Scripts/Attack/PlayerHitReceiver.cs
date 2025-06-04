@@ -45,10 +45,18 @@ public class PlayerHitReceiver : HitReceiver
                 Debug.Log($"PlayerHitReceiver: Applying damage {dame} to healthEnemy: {healthEnemy.name} :  {dame}");
                 healthEnemy.ApplyDamage(dame);
 
+                
+
                 if (IsAlive() == false)
                 {
+                    GameManager.Instance.RemoveEnemy(receiverAnim.gameObject);
+                    if (GameManager.Instance.CheckEnemyCount() == false)
+                    {
+                        attackerrAnim?.PlayVictory();
+                        GameManager.Instance.LoadSceneAfterDelay("SampleScene", 5f);
+                        return;
+                    }
                     receiverAnim?.PlayDefeat();
-                    //attackerrAnim?.PlayVictory();
                     if (receiverAnim != null)
                     {
                         MonoBehaviour[] scripts = receiverAnim.gameObject.GetComponents<MonoBehaviour>();

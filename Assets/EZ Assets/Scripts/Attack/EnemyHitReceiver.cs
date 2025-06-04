@@ -5,6 +5,7 @@ using Ilumisoft.HealthSystem.UI;
 
 public class EnemyHitReceiver : HitReceiver
 {
+
     protected override void Awake()
     {
         base.Awake();
@@ -88,8 +89,11 @@ public class EnemyHitReceiver : HitReceiver
                                     go.transform.GetChild(i).gameObject.SetActive(false);
                                 }
                             }
+                            // Khi player win hoặc defeat
+                            GameManager.Instance.LoadSceneAfterDelay("SampleScene", 5f);
+
                         }
-                        
+
                     }
 
 

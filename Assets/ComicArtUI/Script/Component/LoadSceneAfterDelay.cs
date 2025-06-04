@@ -29,5 +29,12 @@ namespace ComicUI
 
             SceneManager.LoadScene(sceneName);
         }
+
+        public void SetScene(string sceneName)
+        {
+            this.sceneName = sceneName;
+        }
     }
+
+    
 }
