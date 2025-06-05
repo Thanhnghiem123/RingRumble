@@ -3,10 +3,20 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-
 public class GameManager : MonoBehaviour
 {
+    [Header("Game Settings")]
+    [Range(1, 10)]
+    public int totalLevels = 10;
+    [Range(1, 10)]
+    public int currentLevel = 1;
+
+    [Header("Game Mode")]
     public GameMode gameMode;
+    public LevelData levelData; // Dữ liệu level hiện tại
+    public List<LevelData> levels;
+
+    [Header("Game Objects")]
     public List<GameObject> players = new List<GameObject>();
     public List<GameObject> enemies = new List<GameObject>();
 
@@ -17,10 +27,8 @@ public class GameManager : MonoBehaviour
     [Header("Spawn Points")]
     public Transform playerSpawnPoint;
     public Transform enemySpawnPoint;
-    public float playerSpawnRadius = 1f; // Bán kính spawn player
-    public float enemySpawnRadius = 1f;  // Bán kính spawn enemy
-
-    
+    public float playerSpawnRadius = 1f;
+    public float enemySpawnRadius = 1f;
 
     [Header("Spawn Settings")]
     [Range(0, 10)]
@@ -33,27 +41,40 @@ public class GameManager : MonoBehaviour
     void Awake()
     {
         Instance = this;
+        levels = LevelGenerator.GenerateLevels(totalLevels); // Gọi trực tiếp từ LevelGenerator
+        //for (int i = 0; i < levels.Count; i++)
+        //{
+        //    Debug.Log($"Level {i + 1}: Enemy Health = {levels[i].enemyHealth}, Player Health = {levels[i].playerHealth}");
+        //}
     }
 
     void Start()
     {
         playerCount = playerCount - 1;
-        //int mode = (int)gameMode;
         int mode = PlayerPrefs.GetInt("GameMode", (int)gameMode);
         gameMode = (GameMode)mode;
         SetupGameMode(mode);
         SpawnPlayersInArea(playerCount);
         SpawnEnemiesInArea(enemyCount);
-        
-
     }
 
+    public LevelData GetLevelData()
+    {
+        if (currentLevel < 1 || currentLevel > levels.Count)
+            return null;
+        levelData = levels[currentLevel - 1];
+        Debug.Log($"Current Level: {currentLevel}, Enemy Health: {levelData.enemyHealth}, Player Health: {levelData.playerHealth}");
+        return levelData;
+    }
 
-
+    public void SetCurrentLevel(int level)
+    {
+        currentLevel = level;
+    }
 
     public void SetupGameMode(int gameModenew)
     {
-        gameMode = (GameMode)gameModenew; // Ép kiểu int sang enum
+        gameMode = (GameMode)gameModenew;
         PlayerPrefs.SetInt("GameMode", (int)gameMode);
         PlayerPrefs.Save();
         Debug.Log("mode: " + gameMode);
@@ -78,12 +99,8 @@ public class GameManager : MonoBehaviour
             Vector3 randomOffset = Random.insideUnitCircle * playerSpawnRadius;
             Vector3 spawnPos = playerSpawnPoint.position + new Vector3(randomOffset.x, 0, randomOffset.y);
             GameObject playerObj = Instantiate(playerPrefab, spawnPos, playerSpawnPoint.rotation);
-            playerObj.SetActive(true); // Đảm bảo player được kích hoạt
-            //Player playerComponent = playerObj.GetComponent<Player>();
-            //if (playerComponent != null)
-            //{
-                players.Add(playerObj);
-            //}
+            playerObj.SetActive(true);
+            players.Add(playerObj);
         }
     }
 
@@ -93,16 +110,10 @@ public class GameManager : MonoBehaviour
         {
             Vector2 randomOffset = Random.insideUnitCircle * enemySpawnRadius;
             Vector3 spawnPos = enemySpawnPoint.position + new Vector3(randomOffset.x, 0, randomOffset.y);
-
             int randomIndex = Random.Range(0, enemyPrefab.Count);
             GameObject prefab = enemyPrefab[randomIndex];
-
             GameObject enemyObj = Instantiate(prefab, spawnPos, enemySpawnPoint.rotation);
-            //Enemy enemyComponent = enemyObj.GetComponent<Enemy>();
-            //if (enemyComponent != null)
-            //{
             enemies.Add(enemyObj);
-            //}
         }
     }
 
@@ -121,6 +132,7 @@ public class GameManager : MonoBehaviour
             enemies.Remove(enemy);
         }
     }
+
     public void LoadSceneAfterDelay(string sceneName, float delay)
     {
         StartCoroutine(LoadSceneCoroutine(sceneName, delay));
@@ -146,5 +158,4 @@ public class GameManager : MonoBehaviour
     {
         Time.timeScale = 1f;
     }
-
 }

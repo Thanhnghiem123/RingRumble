@@ -10,8 +10,18 @@ public class EnemyMovement : MonoBehaviour, IEnemyMovement
     private IEnemyAttack enemyAttack;
 
     public bool isMoving = false;
-    public bool IsMoving => isMoving;
     public float speed;
+
+    public bool IsMoving => isMoving;
+
+    public float Speed { get => speed; set => speed = value; }
+
+    // Fix for CS0201 and CS0029: Change the property type from void to float
+    public float SetAgentSpeed
+    {
+        get => agent.speed;
+        set => agent.speed = value;
+    }
 
     void Start()
     {
@@ -24,27 +34,22 @@ public class EnemyMovement : MonoBehaviour, IEnemyMovement
     {
         if (targetPlayer == null)
             targetPlayer = FindNearestPlayer();
-        
-        
-         if (targetPlayer != null)
-            {
-              
-                agent.SetDestination(targetPlayer.position);
-                
-                speed = agent.velocity.magnitude;
-                isMoving = speed > 0.2f;
 
-                animationManager.PlayRun(IsMoving);
+        if (targetPlayer != null)
+        {
+            agent.SetDestination(targetPlayer.position);
+
+            speed = agent.velocity.magnitude;
+            isMoving = speed > 0.2f;
+
+            animationManager.PlayRun(IsMoving);
         }
-
-
     }
 
     public void Stop()
     {
         if (agent != null)
         {
-
             agent.isStopped = true;
             agent.ResetPath();
             isMoving = false;

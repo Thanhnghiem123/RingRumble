@@ -42,6 +42,8 @@ public class PlayerMovement : MonoBehaviour, IPlayerMovement
     private PlayerAttack playerAttack;
     private IMovementInput movementInput;
 
+    public float Speed { get => speed; set => speed = value; } // Thuộc tính để truy cập tốc độ di chuyển
+
     public bool IsGrounded() => isGrounded = Physics.Raycast(transform.position, Vector3.down, groundCheckDistance, groundLayer); // Thuộc tính để kiểm tra trạng thái chạm đất
 
     void Start()

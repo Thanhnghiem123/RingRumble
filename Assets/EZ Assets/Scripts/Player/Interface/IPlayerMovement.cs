@@ -2,6 +2,8 @@
 using UnityEngine;
 public interface IPlayerMovement
 {
+
+    float Speed { get; set; }
     void Move();
     void Stop();
     void Jump();

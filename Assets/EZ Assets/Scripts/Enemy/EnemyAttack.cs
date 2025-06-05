@@ -35,7 +35,7 @@ public class EnemyAttack : MonoBehaviour, IEnemyAttack
 
     [Header("Detection Settings")]
     [Tooltip("Distance at which enemy stops approaching player")]
-    public float stoppingDistance = 2.5f;
+    public float stoppingDistance = 0.2f;
 
     [Tooltip("Height of the detection capsule")]
     public float capsuleHeight = 2f;
@@ -61,7 +61,20 @@ public class EnemyAttack : MonoBehaviour, IEnemyAttack
     [Range(0, 1)]
     public float kickChance = 0.4f;
 
-   
+    // IEnemyAttack implementation
+    public float DamePunch { get => damePunch; set => damePunch = value; }
+    public float DameHoldPunch { get => dameHoldPunch; set => dameHoldPunch = value; }
+    public float DameKick { get => dameKick; set => dameKick = value; }
+    public float DameHoldKick { get => dameHoldKick; set => dameHoldKick = value; }
+    public float StoppingDistance { get => stoppingDistance; set => stoppingDistance = value; }
+    public float CapsuleHeight { get => capsuleHeight; set => capsuleHeight = value; }
+    public float CapsuleRadius { get => capsuleRadius; set => capsuleRadius = value; }
+    public float AttackCooldown { get => attackCooldown; set => attackCooldown = value; }
+    public float AttackDelay { get => attackDelay; set => attackDelay = value; }
+    public bool RandomizeAttacks { get => randomizeAttacks; set => randomizeAttacks = value; }
+    public float HoldAttackChance { get => holdAttackChance; set => holdAttackChance = value; }
+    public float KickChance { get => kickChance; set => kickChance = value; }
+
     #endregion
 
     #region Initialization

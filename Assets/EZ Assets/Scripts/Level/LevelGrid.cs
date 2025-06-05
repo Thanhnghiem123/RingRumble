@@ -1,4 +1,5 @@
-﻿using TMPro;
+﻿using ComicUI;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -6,6 +7,7 @@ public class LevelGrid : MonoBehaviour
 {
     public GameObject levelButtonPrefab; // Gán Prefab của Button vào đây
     public int numberOfLevels = 10; // Số lượng vòng chơi
+    public GameObject loadingScreen;
 
     void Start()
     {
@@ -32,9 +34,23 @@ public class LevelGrid : MonoBehaviour
     }
 
     // Hàm xử lý khi nút được click
+
+
     void OnLevelButtonClicked(int level)
     {
         Debug.Log("Bạn đã chọn vòng chơi: " + level);
-        // Thêm logic để tải vòng chơi, ví dụ: SceneManager.LoadScene("Level" + level);
+        GameManager.Instance.SetCurrentLevel(level);
+        loadingScreen.SetActive(true); // Fixed the error by calling the method correctly.  
+
+        LoadSceneAfterDelay.Instance.SetScene("Demo"); // Thay "GamePlay" bằng tên scene bạn muốn load
+        // Gọi load scene delay
+        if (LoadSceneAfterDelay.Instance != null)
+        {
+            Debug.Log("Loading scene after delay...");
+            LoadSceneAfterDelay.Instance.StartCoroutine(
+                LoadSceneAfterDelay.Instance.LoadSceneDelay()
+            );
+        }
     }
+
 }

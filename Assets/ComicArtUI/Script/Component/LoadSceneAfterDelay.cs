@@ -9,7 +9,7 @@ namespace ComicUI
     {
         public string sceneName;
         public Image loadingImage;
-
+        
 
         public static LoadSceneAfterDelay Instance { get; private set; }
 
@@ -50,7 +50,6 @@ namespace ComicUI
         {
             this.sceneName = sceneName;
         }
-    }
 
-    
+    }
 }

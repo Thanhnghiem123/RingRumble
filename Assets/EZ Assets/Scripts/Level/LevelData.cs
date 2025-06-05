@@ -1,48 +1,42 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-public class LevelData : MonoBehaviour
+public class LevelData
 {
-    [Range(1, 10)]
-    public int levelData;
     public float enemyHealth;
-    public float enemyDamePunch;
-    public float enemyDameKick;
     public float enemySpeed;
+    public float enemyDamePunch;
+    public float enemyDameHoldPunch;
+    public float enemyDameKick;
+    public float enemyDameHoldKick;
     public float enemyAttackCooldown;
+    public float enemyholdAttackChance;
+    public float enemykickChance;
 
     public float playerHealth;
-    public float playerDamePunch;
-    public float playerDameKick;
     public float playerSpeed;
-    public float playerAttackCooldown;
+    public float playerDamePunch;
+    public float playerDameHoldPunch;
+    public float playerDameKick;
+    public float playerDameHoldKick;
 
-    public LevelData(int levelData, float enemyHealth, float enemyDamePunch, float enemyDameKick,
-                     float enemySpeed, float enemyAttackCooldown,
-                     float playerHealth, float playerDamePunch, float playerDameKick,
-                     float playerSpeed, float playerAttackCooldown)
+    public LevelData(float enemyHealth, float enemyDamePunch, float enemyDameHoldPunch, float enemyDameKick, float enemyDameHoldKick, float enemySpeed, float enemyAttackCooldown, float enemyholdAttackChance, float enemykickChance,
+                     float playerHealth, float playerDamePunch, float playerDameHoldPunch, float playerDameKick, float playerDameHoldKick, float playerSpeed)
     {
-        this.levelData = levelData;
         this.enemyHealth = enemyHealth;
-        this.enemyDamePunch = enemyDamePunch;
-        this.enemyDameKick = enemyDameKick;
         this.enemySpeed = enemySpeed;
+        this.enemyDamePunch = enemyDamePunch;
+        this.enemyDameHoldPunch = enemyDameHoldPunch;
+        this.enemyDameKick = enemyDameKick;
+        this.enemyDameHoldKick = enemyDameHoldKick;
         this.enemyAttackCooldown = enemyAttackCooldown;
+        this.enemyholdAttackChance = enemyholdAttackChance;
+        this.enemykickChance = enemykickChance;
         this.playerHealth = playerHealth;
-        this.playerDamePunch = playerDamePunch;
-        this.playerDameKick = playerDameKick;
         this.playerSpeed = playerSpeed;
-        this.playerAttackCooldown = playerAttackCooldown;
+        this.playerDamePunch = playerDamePunch;
+        this.playerDameHoldPunch = playerDameHoldPunch;
+        this.playerDameKick = playerDameKick;
+        this.playerDameHoldKick = playerDameHoldKick;
     }
 }
-
-
-
-
-
-///
-/// health (min: 100)
-/// speed (min: 0.5
-/// dame (punch, holdpunch, kick, holdkick)
-/// attackCooldown (max = 5
-///

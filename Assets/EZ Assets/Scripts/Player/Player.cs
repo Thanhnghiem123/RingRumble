@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using Ilumisoft.HealthSystem;
 using UnityEngine;
 public class Player : MonoBehaviour
 {
@@ -51,7 +52,7 @@ public class Player : MonoBehaviour
     private IPlayerAttack playerAttack;
     private IPlayerMovement playerMovement;
     private IMovementInput movementInput;
-    //private PlayerHitReceiver hitReceiver;
+    private Health healthPlayer;
     private bool isInitialized = false;
 
     // getters , setter
@@ -85,11 +86,11 @@ public class Player : MonoBehaviour
         {
             Debug.LogError("MovementInput component not found on " + gameObject.name);
         }
-        //hitReceiver = GetComponent<PlayerHitReceiver>();
-        //if (hitReceiver == null)
-        //{
-        //    Debug.LogError("HitReceiver component not found on " + gameObject.name);
-        //}
+        healthPlayer = GetComponent<Health>();
+        if (healthPlayer == null)
+        {
+            Debug.LogError("Health component not found on " + gameObject.name);
+        }
 
         isInitialized = (movementInput != null);
         if (!isInitialized)
@@ -106,6 +107,50 @@ public class Player : MonoBehaviour
 
         Debug.Log("PlayerAttack initialized with cooldowns: " +
             $"Punch: {punchCooldown}s, Kick: {kickCooldown}s, Jump: {jumpCooldown}s, Special: {specialAttackCooldown}s, Climb: {climbCooldown}s");
+    
+        StartLevel();
+
+    }
+
+    public void StartLevel()
+    {
+        LevelData data = GameManager.Instance.GetLevelData();
+        if (data == null)
+        {
+            Debug.LogError("LevelData is null. Cannot start level.");
+            return;
+        }
+
+        // Assign health to Player
+        if (healthPlayer != null)
+        {
+            healthPlayer.MaxHealth = data.playerHealth;
+            healthPlayer.SetHealth(data.playerHealth);
+            Debug.Log("Player health set to: " + healthPlayer.MaxHealth);
+        }
+
+        // Assign attack stats to PlayerAttack
+        if (playerAttack != null)
+        {
+            playerAttack.DamePunch = data.playerDamePunch;
+            playerAttack.DameHoldPunch = data.playerDameHoldPunch;
+            playerAttack.DameKick = data.playerDameKick;
+            playerAttack.DameHoldKick = data.playerDameHoldKick;
+
+            Debug.Log("Player attack stats set: " +
+                $"DamePunch={playerAttack.DamePunch}, " +
+                $"DameHoldPunch={playerAttack.DameHoldPunch}, " +
+                $"DameKick={playerAttack.DameKick}, " +
+                $"DameHoldKick={playerAttack.DameHoldKick}");
+        }
+
+        // Assign movement speed to PlayerMovement
+        if (playerMovement != null)
+        {
+            playerMovement.Speed = data.playerSpeed;
+        }
+
+        Debug.Log("Player START LEVEL");
     }
 
     void Update()
