@@ -30,21 +30,31 @@ public class AnimationManager : MonoBehaviour, IAnimationManager
 
     public HitType PlayHeadPunch()
     {
-        if (isKnockedOut || isVictorious) return HitType.HeadPunch; // hoặc giá trị mặc định
+        if (isKnockedOut || isVictorious) return HitType.HeadPunch;
         int randomPunch = Random.Range(0, 3);
         if (randomPunch == 0)
         {
             animator.SetTrigger("HeadPunch");
+            // punch
+            string[] punchClips = { "punch", "punch2", "punch3" };
+            string randomClip = punchClips[Random.Range(0, punchClips.Length)];
+            AudioManager.Instance.PlaySFX(randomClip);
             return HitType.HeadPunch;
         }
         else if (randomPunch == 1)
         {
             animator.SetTrigger("KidneyPunchLeft");
+            string[] punchClips = { "punch", "punch2", "punch3" };
+            string randomClip = punchClips[Random.Range(0, punchClips.Length)];
+            AudioManager.Instance.PlaySFX(randomClip);
             return HitType.KidneyPunchLeft;
         }
         else
         {
             animator.SetTrigger("StomachPunch");
+            string[] punchClips = { "punch", "punch2", "punch3" };
+            string randomClip = punchClips[Random.Range(0, punchClips.Length)];
+            AudioManager.Instance.PlaySFX(randomClip);
             return HitType.StomachPunch;
         }
     }
@@ -53,10 +63,43 @@ public class AnimationManager : MonoBehaviour, IAnimationManager
     {
         if (isKnockedOut || isVictorious) return HitType.HeadPunch;
         animator.SetTrigger("KidneyPunchRight");
-        return HitType.KidneyPunchRight; // Trả về KidneyPunchLeft như một ví dụ, có thể thay đổi tùy ý
+        // punch mạnh
+        AudioManager.Instance.PlaySFX("punch3");
+        return HitType.KidneyPunchRight;
     }
 
+    public HitType PlayKick()
+    {
+        if (isKnockedOut || isVictorious) return HitType.Kick;
+        animator.SetTrigger("Kick");
+        // kick
+        string[] kickClips = { "kick", "kick2" };
+        string randomClip = kickClips[Random.Range(0, kickClips.Length)];
+        AudioManager.Instance.PlaySFX(randomClip);
+        return HitType.Kick;
+    }
 
+    public HitType PlayHoldKick()
+    {
+        if (isKnockedOut || isVictorious) return HitType.Jumping;
+        int randomJumpAttack = Random.Range(0, 3);
+        switch (randomJumpAttack)
+        {
+            case 0:
+                animator.SetTrigger("Jumping");
+                AudioManager.Instance.PlaySFX("holdKick");
+                return HitType.Jumping;
+            case 1:
+                animator.SetTrigger("Jumping1");
+                AudioManager.Instance.PlaySFX("holdKick");
+                return HitType.Jumping1;
+            case 2:
+                animator.SetTrigger("Jumping2");
+                AudioManager.Instance.PlaySFX("holdKick");
+                return HitType.Jumping2;
+        }
+        return HitType.Jumping;
+    }
 
 
 
@@ -115,33 +158,7 @@ public class AnimationManager : MonoBehaviour, IAnimationManager
         if (isKnockedOut || isVictorious) return;
         animator.SetTrigger("JumpingOverIntro");
     }
-    public HitType PlayKick()
-    {
-        if (isKnockedOut || isVictorious) return HitType.Kick; // Hoặc giá trị mặc định
-        animator.SetTrigger("Kick");
-        return HitType.Kick; // Trả về KidneyPunchLeft như một ví dụ, có thể thay đổi tùy ý
-
-    }
-
-    public HitType PlayHoldKick()
-    {
-        if (isKnockedOut || isVictorious) return HitType.Jumping;
-        // Chọn ngẫu nhiên giữa các animation nhảy tấn công
-        int randomJumpAttack = Random.Range(0, 3);
-        switch (randomJumpAttack)
-        {
-            case 0:
-                animator.SetTrigger("Jumping");
-                return HitType.Jumping; // Trả về JumpingKick như một ví dụ, có thể thay đổi tùy ý
-            case 1:
-                animator.SetTrigger("Jumping1");
-                return HitType.Jumping1; // Trả về Jumping1 như một ví dụ, có thể thay đổi tùy ý
-            case 2:
-                animator.SetTrigger("Jumping2");
-                return HitType.Jumping2; // Trả về Jumping2 như một ví dụ, có thể thay đổi tùy ý
-        }
-        return HitType.Jumping; // Trả về HeadPunch như một giá trị mặc định nếu không có trường hợp nào khớp
-    }
+    
 
     public HitType PlayKnockedOut()
     {
