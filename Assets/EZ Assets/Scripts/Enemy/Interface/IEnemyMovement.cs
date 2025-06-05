@@ -7,4 +7,5 @@ public interface IEnemyMovement
     Transform FindNearestPlayer();
 
     void Movement();
+    void Stop();
 }

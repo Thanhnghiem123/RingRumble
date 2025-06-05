@@ -7,6 +7,7 @@ public class EnemyMovement : MonoBehaviour, IEnemyMovement
     private NavMeshAgent agent;
     private Transform targetPlayer;
     private IAnimationManager animationManager;
+    private IEnemyAttack enemyAttack;
 
     public bool isMoving = false;
     public bool IsMoving => isMoving;
@@ -16,42 +17,38 @@ public class EnemyMovement : MonoBehaviour, IEnemyMovement
     {
         agent = GetComponent<NavMeshAgent>();
         animationManager = GetComponent<IAnimationManager>();
+        enemyAttack = GetComponent<IEnemyAttack>();
     }
 
     public void Movement()
     {
         if (targetPlayer == null)
             targetPlayer = FindNearestPlayer();
-
-        if (targetPlayer != null)
-        {
-            if(IsMoving)
+        
+        
+         if (targetPlayer != null)
             {
+              
                 agent.SetDestination(targetPlayer.position);
-            }
-            speed = agent.velocity.magnitude;
-            isMoving = speed > 0.2f;
-        }
-        else
-        {
-            Stop();
+                
+                speed = agent.velocity.magnitude;
+                isMoving = speed > 0.2f;
+
+                animationManager.PlayRun(IsMoving);
         }
 
-        if (IsMoving)
-        {
-            animationManager.PlayRun(IsMoving);
-            if (!IsMoving)
-                animationManager.PlayIdle();
-        }
+
     }
 
     public void Stop()
     {
         if (agent != null)
         {
+
             agent.isStopped = true;
             agent.ResetPath();
             isMoving = false;
+            animationManager.PlayRun(IsMoving);
         }
     }
 

@@ -11,7 +11,7 @@ public class EnemyAttack : MonoBehaviour, IEnemyAttack
 {
     #region Private Fields
     private Transform player;
-    private EnemyMovement enemyMovement;
+    private IEnemyMovement enemyMovement;
     private IAnimationManager animationManager;
     private EnemyHitReceiver hitReceiver;
     private NavMeshAgent agent;
@@ -61,18 +61,7 @@ public class EnemyAttack : MonoBehaviour, IEnemyAttack
     [Range(0, 1)]
     public float kickChance = 0.4f;
 
-    float IEnemyAttack.damePunch { get => damePunch; set => damePunch = value; }
-    float IEnemyAttack.dameHoldPunch { get => dameHoldPunch; set => dameHoldPunch = value; }
-    float IEnemyAttack.dameKick { get => dameKick; set => dameKick = value; }
-    float IEnemyAttack.dameHoldKick { get => dameHoldKick; set => dameHoldKick = value; }
-    float IEnemyAttack.stoppingDistance { get => stoppingDistance; set => stoppingDistance = value; }
-    float IEnemyAttack.capsuleHeight { get => capsuleHeight; set => capsuleHeight = value; }
-    float IEnemyAttack.capsuleRadius { get => capsuleRadius; set => capsuleRadius = value; }
-    float IEnemyAttack.attackCooldown { get => attackCooldown; set => attackCooldown = value; }
-    float IEnemyAttack.attackDelay { get => attackDelay; set => attackDelay = value; }
-    bool IEnemyAttack.randomizeAttacks { get => randomizeAttacks; set => randomizeAttacks = value; }
-    float IEnemyAttack.holdAttackChance { get => holdAttackChance; set => holdAttackChance = value; }
-    float IEnemyAttack.kickChance { get => kickChance; set => kickChance = value; }
+   
     #endregion
 
     #region Initialization
@@ -117,7 +106,7 @@ public class EnemyAttack : MonoBehaviour, IEnemyAttack
 
         // Check if player is in attack range using capsule overlap
         playerInAttackRange = IsPlayerInAttackRange();
-        //Debug.Log("playerInAttackRange:" + playerInAttackRange);
+        Debug.Log("playerInAttackRange:" + playerInAttackRange);
         if (playerInAttackRange && Time.time >= lastAttackTime + attackCooldown)
         {
             agent.isStopped = true; // Stop the agent to perform attack

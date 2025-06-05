@@ -10,13 +10,14 @@ public class Enemy : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     private IAnimationManager animationManager;
     private IEnemyMovement enemyMovement;
-    private bool lastIsMoving = false;
+    private IEnemyAttack enemyAttack;
 
     void Start()
     {
 
         animationManager = GetComponent<IAnimationManager>();
         enemyMovement = GetComponent<IEnemyMovement>();
+        enemyAttack = GetComponent<IEnemyAttack>();
     }
 
     // Update is called once per frame
@@ -25,9 +26,19 @@ public class Enemy : MonoBehaviour
 
         if (enemyMovement == null || animationManager == null)
             return;
-        enemyMovement.Movement();
 
-        // Kiểm tra trạng thái di chuyển và gọi animation tương ứng
-        
+        if (enemyAttack.IsPlayerInAttackRange())
+        {
+            enemyAttack.Attack();
+            enemyMovement.Stop();
+        }
+
+        else
+            enemyMovement.Movement();
+        //Debug.Log("Enemy is moving: " + enemyMovement.IsMoving);
+
+
+
+
     }
 }
