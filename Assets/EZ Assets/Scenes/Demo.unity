@@ -21879,10 +21879,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: CharMain_01
       objectReference: {fileID: 0}
-    - target: {fileID: 4289722486823969361, guid: 6e70ac2dd964f7e4798ba322509c7e7a, type: 3}
-      propertyPath: speed
-      value: 5.36
-      objectReference: {fileID: 0}
     - target: {fileID: 5532893504157818353, guid: 6e70ac2dd964f7e4798ba322509c7e7a, type: 3}
       propertyPath: cameraTransform
       value: 
@@ -21895,26 +21891,6 @@ PrefabInstance:
       propertyPath: fillImage
       value: 
       objectReference: {fileID: 1202020508}
-    - target: {fileID: 6457695023710495860, guid: 6e70ac2dd964f7e4798ba322509c7e7a, type: 3}
-      propertyPath: holdKickKnockback
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 7618532433591576211, guid: 6e70ac2dd964f7e4798ba322509c7e7a, type: 3}
-      propertyPath: dameKick
-      value: 7
-      objectReference: {fileID: 0}
-    - target: {fileID: 7618532433591576211, guid: 6e70ac2dd964f7e4798ba322509c7e7a, type: 3}
-      propertyPath: kickRange
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 7618532433591576211, guid: 6e70ac2dd964f7e4798ba322509c7e7a, type: 3}
-      propertyPath: dameHoldPunch
-      value: 10
-      objectReference: {fileID: 0}
-    - target: {fileID: 7913929114223964046, guid: 6e70ac2dd964f7e4798ba322509c7e7a, type: 3}
-      propertyPath: specialHitTime
-      value: 3.5
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

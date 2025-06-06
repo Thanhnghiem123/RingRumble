@@ -3,38 +3,34 @@ using Ilumisoft.HealthSystem;
 using UnityEngine;
 using UnityEngine.AI;
 
-/// <summary>
-/// Manages enemy combat behaviors including attack detection and animation triggering
-/// </summary>
 [RequireComponent(typeof(EnemyMovement))]
 public class EnemyAttack : MonoBehaviour, IEnemyAttack
 {
     #region Private Fields
-    private Transform player;
+    private Transform target;
     private IEnemyMovement enemyMovement;
     private IAnimationManager animationManager;
     private EnemyHitReceiver hitReceiver;
+    private PlayerHitReceiver hitReceiver2;
     private NavMeshAgent agent;
 
-    // References to detect player
-    private int playerLayerMask;
-
-    // Internal state tracking
-    private bool playerInAttackRange = false;
-    public  float lastAttackTime = 0f;
+    private int targetLayerMask;
+    private bool targetInAttackRange = false;
+    public float lastAttackTime = 0f;
     private int currentAttackIndex = 0;
+    [Tooltip("Set to true for ally (targets enemies), false for enemy (targets players and allies)")]
+    public bool isAlly = false;
     #endregion
 
     #region Inspector Fields
-    [Header("Enemy Combat Settings")]
+    [Header("Combat Settings")]
     public float damePunch;
     public float dameHoldPunch;
-    public float dameKick ;
+    public float dameKick;
     public float dameHoldKick;
 
-
     [Header("Detection Settings")]
-    [Tooltip("Distance at which enemy stops approaching player")]
+    [Tooltip("Distance at which entity stops approaching target")]
     public float stoppingDistance = 0.2f;
 
     [Tooltip("Height of the detection capsule")]
@@ -61,7 +57,6 @@ public class EnemyAttack : MonoBehaviour, IEnemyAttack
     [Range(0, 1)]
     public float kickChance = 0.4f;
 
-    // IEnemyAttack implementation
     public float DamePunch { get => damePunch; set => damePunch = value; }
     public float DameHoldPunch { get => dameHoldPunch; set => dameHoldPunch = value; }
     public float DameKick { get => dameKick; set => dameKick = value; }
@@ -74,161 +69,129 @@ public class EnemyAttack : MonoBehaviour, IEnemyAttack
     public bool RandomizeAttacks { get => randomizeAttacks; set => randomizeAttacks = value; }
     public float HoldAttackChance { get => holdAttackChance; set => holdAttackChance = value; }
     public float KickChance { get => kickChance; set => kickChance = value; }
-
     #endregion
 
     #region Initialization
     void Start()
     {
-        
-        // Find required components
         enemyMovement = GetComponent<EnemyMovement>();
         animationManager = GetComponent<IAnimationManager>();
         hitReceiver = GetComponent<EnemyHitReceiver>();
-
-        // Find player and setup layer mask
-        player = GameObject.FindGameObjectWithTag("Player")?.transform;
-        playerLayerMask = LayerMask.GetMask("Player");
+        hitReceiver2 = GetComponent<PlayerHitReceiver>();
         agent = GetComponent<NavMeshAgent>();
+        targetLayerMask = isAlly ? LayerMask.GetMask("Enemy") : (LayerMask.GetMask("Player") | LayerMask.GetMask("Ally"));
 
-        // Verify required components
         if (enemyMovement == null)
-            Debug.LogError("EnemyMovement component not found on " + gameObject.name);
-
+            Debug.LogError("EnemyMovement not found on " + gameObject.name);
         if (animationManager == null)
             Debug.LogError("IAnimationManager not found on " + gameObject.name);
-
         if (hitReceiver == null)
-            Debug.LogError("HitReceiver not found on " + gameObject.name);
+            Debug.LogError("EnemyHitReceiver not found on " + gameObject.name);
+        if (hitReceiver2 == null)
+            Debug.LogError("PlayerHitReceiver not found on " + gameObject.name);
+        if (agent == null)
+            Debug.LogError("NavMeshAgent not found on " + gameObject.name);
 
-        if (player == null)
-            Debug.LogError("Player not found in scene");
+        Debug.Log($"{gameObject.name} - Initialized with targetLayerMask: {(isAlly ? "Enemy" : "Player, Ally")}");
     }
     #endregion
 
     #region Update Logic
-    private bool wasPlayerInAttackRange = false;
+    private bool wasTargetInAttackRange = false;
     public void Attack()
     {
-        if (player == null) return;
-
-        float distanceToPlayer = Vector3.Distance(transform.position, player.position);
-        UpdateStoppingDistance(distanceToPlayer);
-
-        playerInAttackRange = IsPlayerInAttackRange();
-
-        // Chỉ cập nhật lastAttackTime khi player vừa vào vùng tấn công
-        if (playerInAttackRange && !wasPlayerInAttackRange)
+        if (agent == null || !agent.enabled) return;
+        target = enemyMovement.FindNearestTarget();
+        if (target == null)
         {
-            lastAttackTime = Time.time;
-            Debug.Log("Player just entered attack range, start timing: " + lastAttackTime);
+            Debug.Log($"{gameObject.name} - No target found for attack.");
+            return;
         }
 
-        wasPlayerInAttackRange = playerInAttackRange;
+        float distanceToTarget = Vector3.Distance(transform.position, target.position);
+        UpdateStoppingDistance(distanceToTarget);
 
-        Debug.Log("playerInAttackRange:" + playerInAttackRange);
+        targetInAttackRange = IsPlayerInAttackRange();
 
-        if (playerInAttackRange && Time.time >= lastAttackTime + attackCooldown)
+        if (targetInAttackRange && !wasTargetInAttackRange)
+        {
+            lastAttackTime = Time.time;
+            Debug.Log($"{(isAlly ? "Ally" : "Enemy")} on {gameObject.name} - Target {target.name} entered attack range at: {lastAttackTime}");
+        }
+
+        wasTargetInAttackRange = targetInAttackRange;
+
+        if (targetInAttackRange && Time.time >= lastAttackTime + attackCooldown)
         {
             agent.isStopped = true;
-            Debug.Log("Player in attack range, performing attack " + lastAttackTime);
+            Debug.Log($"{(isAlly ? "Ally" : "Enemy")} on {gameObject.name} - Performing attack on {target.name} at: {lastAttackTime}");
             PerformAttack();
-            lastAttackTime = Time.time; // Reset timer sau khi tấn công
+            lastAttackTime = Time.time;
         }
     }
     #endregion
 
     #region Movement Control
-    /// <summary>
-    /// Updates the stopping distance in NavMeshAgent based on player proximity
-    /// </summary>
-    public  void UpdateStoppingDistance(float distanceToPlayer)
+    public void UpdateStoppingDistance(float distanceToTarget)
     {
-        if (distanceToPlayer <= stoppingDistance)
+        if (agent == null || !agent.enabled) return;
+
+        if (distanceToTarget <= stoppingDistance)
         {
-            // Get NavMeshAgent from EnemyMovement and update stopping distance
-            var agent = GetComponent<UnityEngine.AI.NavMeshAgent>();
-            if (agent != null)
+            agent.isStopped = true;
+            Vector3 direction = (target.position - transform.position).normalized;
+            direction.y = 0;
+            if (direction != Vector3.zero)
             {
-                agent.isStopped = true;
-
-                // Rotate towards player
-                Vector3 direction = (player.position - transform.position).normalized;
-                direction.y = 0; // Keep rotation on horizontal plane
-
-                if (direction != Vector3.zero)
-                {
-                    Quaternion lookRotation = Quaternion.LookRotation(direction);
-                    transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * 5f);
-                }
+                Quaternion lookRotation = Quaternion.LookRotation(direction);
+                transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * 5f);
             }
         }
         else
         {
-            // Continue pursuing player
-            var agent = GetComponent<UnityEngine.AI.NavMeshAgent>();
-            if (agent != null)
-            {
-                agent.isStopped = false;
-            }
+            agent.isStopped = false;
         }
     }
     #endregion
 
     #region Combat Detection
-    /// <summary>
-    /// Checks if player is within attack range using a capsule overlap
-    /// </summary>
     public bool IsPlayerInAttackRange()
     {
-        // Calculate capsule endpoints
         Vector3 center = transform.position + transform.forward * capsuleRadius;
         Vector3 point1 = center + Vector3.up * (capsuleHeight * 0.5f - capsuleRadius);
         Vector3 point2 = center - Vector3.up * (capsuleHeight * 0.5f - capsuleRadius);
+        Collider[] hits = Physics.OverlapCapsule(point1, point2, capsuleRadius, targetLayerMask);
 
-        // Perform capsule overlap check
-        Collider[] hits = Physics.OverlapCapsule(point1, point2, capsuleRadius, playerLayerMask);
-
-        // Debug visualization
         if (hits.Length > 0)
         {
-            Debug.DrawLine(point1, point2, Color.red);
+            Debug.DrawLine(point1, point2, Color.red, 1f);
+            foreach (var hit in hits)
+            {
+                Debug.Log($"{(isAlly ? "Ally" : "Enemy")} on {gameObject.name} - Detected target: {hit.gameObject.name} in layer: {LayerMask.LayerToName(hit.gameObject.layer)} , targetlayer : {targetLayerMask}");
+            }
+            return true;
         }
         else
         {
-            Debug.DrawLine(point1, point2, Color.green);
+            Debug.DrawLine(point1, point2, Color.green, 1f);
+            return false;
         }
-
-        return hits.Length > 0;
     }
     #endregion
 
     #region Attack Logic
-    /// <summary>
-    /// Perform an attack based on configured probabilities
-    /// </summary>
     public void PerformAttack()
     {
-        // Determine attack type based on probabilities or sequence
         AttackType attackType = DetermineAttackType();
-
-        // Execute the selected attack
         ExecuteAttack(attackType);
     }
 
-    /// <summary>
-    /// Determines which attack to perform based on configuration
-    /// </summary>
     public AttackType DetermineAttackType()
     {
         if (randomizeAttacks)
         {
-            // Determine if this will be a hold attack
             bool isHoldAttack = Random.value < holdAttackChance;
-
-            // Determine if this will be a kick or punch
             bool isKick = Random.value < kickChance;
-
             if (isHoldAttack)
             {
                 return isKick ? AttackType.HoldKick : AttackType.HoldPunch;
@@ -240,27 +203,20 @@ public class EnemyAttack : MonoBehaviour, IEnemyAttack
         }
         else
         {
-            // Cycle through attacks in sequence
             currentAttackIndex = (currentAttackIndex + 1) % 4;
             return (AttackType)currentAttackIndex;
         }
     }
 
-    /// <summary>
-    /// Executes the selected attack type and performs hit detection
-    /// </summary>
     public void ExecuteAttack(AttackType attackType)
     {
         HitType hitType = PlayAttackAnimation(attackType);
         (float dame, float delay) = GetDamageByHitType(attackType);
-
-
-        hitReceiver.ReceiveHit(hitType, delay, capsuleHeight, capsuleRadius, dame, playerLayerMask);
-
+        Debug.Log($"{(isAlly ? "Ally" : "Enemy")} on {gameObject.name} - Executing attack: {attackType} with damage: {dame}, delay: {delay}");
+        hitReceiver?.ReceiveHit(hitType, delay, capsuleHeight, capsuleRadius, dame, targetLayerMask);
+        hitReceiver2?.ReceiveHit(hitType, delay, capsuleHeight, capsuleRadius, dame, targetLayerMask);
     }
-    /// <summary>
-    /// Enum representing different attack types the enemy can perform
-    /// </summary>
+
     public enum AttackType
     {
         Punch = 0,
@@ -270,9 +226,10 @@ public class EnemyAttack : MonoBehaviour, IEnemyAttack
     }
     #endregion
 
-
+    #region Animation and Damage
     public HitType PlayAttackAnimation(AttackType attackType)
     {
+        if (animationManager == null) return HitType.HeadPunch;
         switch (attackType)
         {
             case AttackType.Punch:
@@ -284,7 +241,7 @@ public class EnemyAttack : MonoBehaviour, IEnemyAttack
             case AttackType.HoldKick:
                 return animationManager.PlayHoldKick();
             default:
-                return HitType.HeadPunch;
+                return animationManager.PlayHeadPunch();
         }
     }
 
@@ -295,72 +252,42 @@ public class EnemyAttack : MonoBehaviour, IEnemyAttack
             case AttackType.Punch:
                 return (damePunch, attackDelay);
             case AttackType.HoldPunch:
-                return (damePunch, attackDelay);
+                return (dameHoldPunch, attackDelay);
             case AttackType.Kick:
-                return (damePunch, attackDelay);
+                return (dameKick, attackDelay);
             case AttackType.HoldKick:
-                return (damePunch, attackDelay);
+                return (dameHoldKick, attackDelay);
+            default:
+                return (0, 0);
         }
-        return (0,0);
     }
-
-
-
-
-
-
- 
-
-
-
-
-
-
+    #endregion
 
     #region Gizmo Visualization
-    /// <summary>
-    /// Draw attack range gizmo in editor
-    /// </summary>
     private void OnDrawGizmosSelected()
     {
         if (!Application.isPlaying) return;
-
-        // Draw stopping distance
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(transform.position, stoppingDistance);
-
-        // Draw attack range
         Vector3 center = transform.position + transform.forward * capsuleRadius;
         Vector3 point1 = center + Vector3.up * (capsuleHeight * 0.5f - capsuleRadius);
         Vector3 point2 = center - Vector3.up * (capsuleHeight * 0.5f - capsuleRadius);
-
-        Gizmos.color = playerInAttackRange ? Color.red : Color.green;
+        Gizmos.color = targetInAttackRange ? Color.red : Color.green;
         DrawWireCapsule(point1, point2, capsuleRadius);
     }
 
-    /// <summary>
-    /// Helper method to draw wire capsule gizmo
-    /// </summary>
     private void DrawWireCapsule(Vector3 p1, Vector3 p2, float radius)
     {
-        // Draw end spheres
         Gizmos.DrawWireSphere(p1, radius);
         Gizmos.DrawWireSphere(p2, radius);
-
-        // Calculate direction vectors
         Vector3 up = (p2 - p1).normalized;
         Vector3 forward = Vector3.Slerp(up, -up, 0.5f);
         Vector3 right = Vector3.Cross(up, forward).normalized;
-
-        // Draw connecting lines
         Gizmos.DrawLine(p1 + right * radius, p2 + right * radius);
         Gizmos.DrawLine(p1 - right * radius, p2 - right * radius);
-
         forward = Vector3.Cross(up, right).normalized;
         Gizmos.DrawLine(p1 + forward * radius, p2 + forward * radius);
         Gizmos.DrawLine(p1 - forward * radius, p2 - forward * radius);
     }
-
-   
     #endregion
 }

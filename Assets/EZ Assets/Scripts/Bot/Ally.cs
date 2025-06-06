@@ -4,66 +4,89 @@ using Ilumisoft.HealthSystem;
 public class Ally : MonoBehaviour
 {
     private IAnimationManager animationManager;
-    private IEnemyMovement allyMovement;
-    private IEnemyAttack allyAttack;
+    private IEnemyMovement enemyMovement;
+    private IEnemyAttack enemyAttack;
     private Health healthAlly;
 
     void Start()
     {
         animationManager = GetComponent<IAnimationManager>();
-        allyMovement = GetComponent<IEnemyMovement>();
-        allyAttack = GetComponent<IEnemyAttack>();
+        enemyMovement = GetComponent<EnemyMovement>();
+        enemyAttack = GetComponent<EnemyAttack>();
         healthAlly = GetComponent<Health>();
 
+        if (animationManager == null)
+            Debug.LogError($"[{gameObject.name}] IAnimationManager not found!");
+        if (enemyMovement == null)
+            Debug.LogError($"[{gameObject.name}] EnemyMovement not found!");
+        if (enemyAttack == null)
+            Debug.LogError($"[{gameObject.name}] EnemyAttack not found!");
+        if (healthAlly == null)
+            Debug.LogError($"[{gameObject.name}] Health not found!");
+
+        // Cấu hình cho bot
+        if (enemyMovement is EnemyMovement movement)
+            movement.isAlly = true;
+        if (enemyAttack is EnemyAttack attack)
+            attack.isAlly = true;
+
         StartLevel();
+        Debug.Log($"[{gameObject.name}] Ally initialized with isAlly = true.");
     }
 
     void Update()
     {
-        if (allyMovement == null || animationManager == null)
-            return;
-
-        if (allyAttack.IsPlayerInAttackRange())
+        if (enemyMovement == null || animationManager == null || enemyAttack == null)
         {
-            allyAttack.Attack();
-            allyMovement.Stop();
+            Debug.LogWarning($"[{gameObject.name}] Missing components, cannot update!");
+            return;
+        }
+
+        // Kiểm tra mục tiêu từ EnemyMovement để đảm bảo tấn công đúng
+        Transform target = (enemyMovement as EnemyMovement)?.FindNearestTarget();
+        if (target != null && enemyAttack.IsPlayerInAttackRange())
+        {
+            Debug.Log($"[{gameObject.name}] Attacking target: {target.name} in range. transform {target.transform.position}");
+            enemyAttack.Attack();
+            enemyMovement.Stop();
         }
         else
         {
-            allyMovement.Movement();
+            Debug.Log($"[{gameObject.name}] No valid target or not in range, moving to target.");
+            enemyMovement.Movement();
         }
     }
 
     public void StartLevel()
     {
-        LevelData data = GameManager.Instance.GetLevelData();
+        LevelData data = GameManager.Instance?.GetLevelData();
         if (data == null)
         {
-            Debug.LogError("LevelData is null. Cannot start level.");
+            Debug.LogError($"[{gameObject.name}] LevelData is null!");
             return;
         }
 
-        // Gán máu cho Ally
         if (healthAlly != null)
         {
-            healthAlly.MaxHealth = data.playerHealth;
-            healthAlly.SetHealth(data.playerHealth);
+            healthAlly.MaxHealth = data.enemyHealth;
+            healthAlly.SetHealth(data.enemyHealth);
+            Debug.Log($"[{gameObject.name}] Ally health set to: {healthAlly.MaxHealth}");
         }
 
-        // Gán các chỉ số tấn công cho AllyAttack
-        if (allyAttack != null)
+        if (enemyAttack != null)
         {
-            allyAttack.DamePunch = data.playerDamePunch;
-            allyAttack.DameHoldPunch = data.playerDameHoldPunch;
-            allyAttack.DameKick = data.playerDameKick;
-            allyAttack.DameHoldKick = data.playerDameHoldKick;
-            // Nếu muốn, có thể set thêm các chỉ số khác
+            enemyAttack.DamePunch = data.enemyDamePunch;
+            enemyAttack.DameHoldPunch = data.enemyDameHoldPunch;
+            enemyAttack.DameKick = data.enemyDameKick;
+            enemyAttack.DameHoldKick = data.enemyDameHoldKick;
+
+
         }
 
-        // Gán tốc độ di chuyển cho AllyMovement
-        if (allyMovement != null)
+        if (enemyMovement != null)
         {
-            allyMovement.Speed = data.playerSpeed;
+            enemyMovement.SetAgentSpeed = data.enemySpeed;
+            Debug.Log($"[{gameObject.name}] Bot speed set to: {enemyMovement.SetAgentSpeed}");
         }
     }
 }

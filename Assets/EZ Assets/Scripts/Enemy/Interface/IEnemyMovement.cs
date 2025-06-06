@@ -5,7 +5,7 @@ public interface IEnemyMovement
     bool IsMoving { get; }
     float Speed { get; set; }
     void SetTarget(Transform target);
-    Transform FindNearestPlayer();
+    Transform FindNearestTarget();
 
     void Movement();
     void Stop();
