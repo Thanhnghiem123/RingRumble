@@ -17,29 +17,7 @@ public class Player : MonoBehaviour
     public float specialAttackCooldown;
 
 
-    //[Header("Attack Settings")]
-    //public float capsuleHeight = 2f;
-    //public float capsuleRadius = 0.35f;
-    
 
-
-
-
-    //[Header("Attack Delay Settings")]
-    //public float punchDelay = 0.2f;
-    //public float kickDelay = 0.25f;
-    //public float holdPunchDelay = 0.9f;
-    //public float holdKickDelay = 0.35f;
-
-    //public float damePunch = 10f;
-    //public float dameKick = 15f;
-    //public float dameHoldPunch = 20f;
-    //public float dameHoldKick = 25f;
-    //public float kickRange = 0.65f;
-
-
-    //public LayerMask enemyLayer;
-    //public LayerMask ropesLayer;
 
     private CooldownTimer punchTimer;
     private CooldownTimer kickTimer;
@@ -54,14 +32,11 @@ public class Player : MonoBehaviour
     private IMovementInput movementInput;
     private Health healthPlayer;
     private bool isInitialized = false;
+   
 
-    // getters , setter
-    //public float PunchDelay { get => punchDelay; set => punchDelay = value; }
-    //public float KickDelay { get => kickDelay; set => kickDelay = value; }
-    //public float HoldPunchDelay { get => holdPunchDelay; set => holdPunchDelay = value; }
-    //public float HoldKickDelay { get => holdKickDelay; set => holdKickDelay = value; }
-    //public float CapsuleHeight { get => capsuleHeight; set => capsuleHeight = value; }
-    //public float CapsuleRadius { get => capsuleRadius; set => capsuleRadius = value; }
+ 
+
+
 
     void Start()
     {
@@ -98,6 +73,7 @@ public class Player : MonoBehaviour
             Debug.LogError("PlayerController initialization failed. Disabling script.");
             enabled = false;
         }
+        
 
         punchTimer = new CooldownTimer(punchCooldown);
         kickTimer = new CooldownTimer(kickCooldown);
@@ -108,6 +84,8 @@ public class Player : MonoBehaviour
         Debug.Log("PlayerAttack initialized with cooldowns: " +
             $"Punch: {punchCooldown}s, Kick: {kickCooldown}s, Jump: {jumpCooldown}s, Special: {specialAttackCooldown}s, Climb: {climbCooldown}s");
     
+
+
         StartLevel();
 
     }
@@ -321,5 +299,5 @@ public class Player : MonoBehaviour
 
 
 
-    
+
 }

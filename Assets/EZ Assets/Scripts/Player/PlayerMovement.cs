@@ -106,6 +106,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerMovement
             // Prevent movement
             return;
         }
+        if (!AttackManager.PNormalState) return;
         if (rb != null && movementInput != null)
         {
             Vector3 direction = movementInput.GetDirection();

@@ -1,5 +1,7 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.AI;
+using static UnityEngine.GraphicsBuffer;
 
 [RequireComponent(typeof(NavMeshAgent))]
 public class EnemyMovement : MonoBehaviour, IEnemyMovement
@@ -32,7 +34,8 @@ public class EnemyMovement : MonoBehaviour, IEnemyMovement
 
     public void Movement()
     {
-        if (targetPlayer == null)
+        //if (!AttackManager.ENormalState) return;
+        
             targetPlayer = FindNearestPlayer();
 
         if (targetPlayer != null)
@@ -69,7 +72,7 @@ public class EnemyMovement : MonoBehaviour, IEnemyMovement
 
         float minDist = float.MaxValue;
         Transform nearest = null;
-        foreach (var player in GameManager.Instance.players)
+        foreach (var player in GameManager.Instance.enemies)
         {
             if (player == null) continue;
             float dist = Vector3.Distance(transform.position, player.transform.position);
@@ -82,3 +85,4 @@ public class EnemyMovement : MonoBehaviour, IEnemyMovement
         return nearest;
     }
 }
+

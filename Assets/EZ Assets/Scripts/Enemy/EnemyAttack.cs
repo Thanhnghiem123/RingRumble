@@ -107,27 +107,33 @@ public class EnemyAttack : MonoBehaviour, IEnemyAttack
     #endregion
 
     #region Update Logic
+    private bool wasPlayerInAttackRange = false;
     public void Attack()
     {
         if (player == null) return;
 
-        // Calculate distance to player
         float distanceToPlayer = Vector3.Distance(transform.position, player.position);
-
-        // Update NavMeshAgent stopping distance dynamically
         UpdateStoppingDistance(distanceToPlayer);
 
-        // Check if player is in attack range using capsule overlap
         playerInAttackRange = IsPlayerInAttackRange();
+
+        // Chỉ cập nhật lastAttackTime khi player vừa vào vùng tấn công
+        if (playerInAttackRange && !wasPlayerInAttackRange)
+        {
+            lastAttackTime = Time.time;
+            Debug.Log("Player just entered attack range, start timing: " + lastAttackTime);
+        }
+
+        wasPlayerInAttackRange = playerInAttackRange;
+
         Debug.Log("playerInAttackRange:" + playerInAttackRange);
+
         if (playerInAttackRange && Time.time >= lastAttackTime + attackCooldown)
         {
-            agent.isStopped = true; // Stop the agent to perform attack
-            lastAttackTime = Time.time;
-            Debug.Log("Player in attack range, performing attack" + lastAttackTime);
+            agent.isStopped = true;
+            Debug.Log("Player in attack range, performing attack " + lastAttackTime);
             PerformAttack();
-            
-            
+            lastAttackTime = Time.time; // Reset timer sau khi tấn công
         }
     }
     #endregion

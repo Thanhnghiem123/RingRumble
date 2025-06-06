@@ -8,8 +8,11 @@ public class GameManager : MonoBehaviour
     [Header("Game Settings")]
     [Range(1, 10)]
     public int totalLevels = 10;
+    [Range(1, 3)]
+    public int currentMode = 1;
     [Range(1, 10)]
     public int currentLevel = 1;
+
 
     [Header("Game Mode")]
     public GameMode gameMode;
@@ -31,29 +34,33 @@ public class GameManager : MonoBehaviour
     public float enemySpawnRadius = 1f;
 
     [Header("Spawn Settings")]
-    [Range(0, 10)]
+    [Range(1, 10)]
     public int playerCount = 1;
     [Range(1, 10)]
     public int enemyCount = 1;
+
+    [Header("Level Generator")]
+    public LevelGenerator levelGenerator; // Tham chiếu đến LevelGenerator nếu cần
 
     public static GameManager Instance { get; private set; }
 
     void Awake()
     {
         Instance = this;
-        levels = LevelGenerator.GenerateLevels(totalLevels); // Gọi trực tiếp từ LevelGenerator
-        //for (int i = 0; i < levels.Count; i++)
-        //{
-        //    Debug.Log($"Level {i + 1}: Enemy Health = {levels[i].enemyHealth}, Player Health = {levels[i].playerHealth}");
-        //}
+        levelGenerator = GetComponent<LevelGenerator>();
+        Debug.Log("GameManager Awake called" + gameMode);
+  
     }
 
     void Start()
     {
         playerCount = playerCount - 1;
-        int mode = PlayerPrefs.GetInt("GameMode", (int)gameMode);
-        gameMode = (GameMode)mode;
-        SetupGameMode(mode);
+        currentMode = PlayerPrefs.GetInt("GameMode", (int)gameMode);
+        currentLevel = PlayerPrefs.GetInt("CurrentLevel", 1);
+        gameMode = (GameMode)currentMode;
+        levels = levelGenerator.GenerateLevels(totalLevels, gameMode); // Gọi trực tiếp từ LevelGenerator
+
+        SetupGameMode(currentMode);
         SpawnPlayersInArea(playerCount);
         SpawnEnemiesInArea(enemyCount);
     }
@@ -70,6 +77,9 @@ public class GameManager : MonoBehaviour
     public void SetCurrentLevel(int level)
     {
         currentLevel = level;
+        PlayerPrefs.SetInt("CurrentLevel", currentLevel);
+        PlayerPrefs.Save();
+
     }
 
     public void SetupGameMode(int gameModenew)

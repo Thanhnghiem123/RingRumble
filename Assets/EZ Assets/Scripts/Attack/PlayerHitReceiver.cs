@@ -10,7 +10,7 @@ public class PlayerHitReceiver : HitReceiver
     protected override void Awake()
     {
         base.Awake();
-       
+        animator = GetComponent<Animator>();
     }
 
     
@@ -32,7 +32,11 @@ public class PlayerHitReceiver : HitReceiver
 
             // attacker = player
             // receiver = enemy
-            receiverAnim?.PlayHit(hitType);
+            float hitTime = (float)(receiverAnim?.PlayHit(hitType));
+            Debug.Log($"aaaa: Hit time for animation: {hitTime}, Hit type: {hitType}");
+
+            AttackManager.SetNormalStateFalse(hitTime, receiver.GetComponent<Animator>());
+
             Debug.Log($"PlayerHitReceiver: Playing hit animation for");
             Debug.Log("ISALIVE: " + IsAlive());
             
@@ -47,38 +51,47 @@ public class PlayerHitReceiver : HitReceiver
                 healthEnemy.ApplyDamage(dame);
 
                 
-
+                Debug.Log($"PlayerHitReceiver: IsAlive after damage: {IsAlive()}");
                 if (IsAlive() == false)
                 {
+                    receiverAnim?.PlayDefeat();
                     GameManager.Instance.RemoveEnemy(receiverAnim.gameObject);
+                    if (receiverAnim != null)
+                    {
+                        MonoBehaviour[] scripts = receiverAnim.gameObject.GetComponents<MonoBehaviour>();
+                        foreach (var script in scripts)
+                        {
+                            if (script != null && script != this && !(script is PlayerHealthbar))
+                            {
+                                script.enabled = false;
+                            }
+                        }
+
+                        var Capsule = receiverAnim.GetComponent<CapsuleCollider>();
+                        if (Capsule != null)
+                            Capsule.enabled = false;
+
+                        var rb = receiverAnim.GetComponent<Rigidbody>();
+                        if (rb != null)
+                            rb.constraints |= RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionY | RigidbodyConstraints.FreezePositionZ;
+                    }
+                    Debug.Log("ISALIVEssssss: " + IsAlive());
+                    Debug.Log($"PlayerHitReceiver: IsAlive after damage: {IsAlive()}");
+
+
+                    Debug.Log($"PlayerHitReceiver: Enemy defeated. Remaining enemies: {GameManager.Instance.CheckEnemyCount()}");
                     if (GameManager.Instance.CheckEnemyCount() == false)
                     {
-
-                        if (receiverAnim != null)
-                        {
-                            MonoBehaviour[] scripts = receiverAnim.gameObject.GetComponents<MonoBehaviour>();
-                            foreach (var script in scripts)
-                            {
-                                if (script != null && script != this && !(script is PlayerHealthbar))
-                                {
-                                    script.enabled = false;
-                                }
-                            }
-
-                            var Capsule = receiverAnim.GetComponent<CapsuleCollider>();
-                            if (Capsule != null)
-                                Capsule.enabled = false;
-
-                            var rb = receiverAnim.GetComponent<Rigidbody>();
-                            if (rb != null)
-                                rb.constraints |= RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionY | RigidbodyConstraints.FreezePositionZ;
-                        }
-                        Debug.Log("ISALIVEssssss: " + IsAlive());
-
-
                         attackerrAnim?.PlayVictory();
-                        receiverAnim?.PlayDefeat();
-                        GameManager.Instance.LoadSceneAfterDelay("SampleScene", 5f);
+                        
+                        
+                        PopupEnd.Instance.ShowVictoryPopup();
+
+                        
+
+
+                        
+
                         return;
                     }
                     

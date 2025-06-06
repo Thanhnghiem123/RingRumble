@@ -9,6 +9,7 @@ public class EnemyHitReceiver : HitReceiver
     protected override void Awake()
     {
         base.Awake();
+        animator = GetComponent<Animator>();
     }
 
 
@@ -42,18 +43,7 @@ public class EnemyHitReceiver : HitReceiver
                     // receiver = player
                     // attacker = enemy
                     receiverAnim?.PlayDefeat();
-                    //attackerrAnim?.PlayVictory();
 
-                    // Tắt toàn bộ script (MonoBehaviour) trên GameObject của attacker ngoai tru scri
-                    //if (attackerrAnim != null)
-                    //{
-                    //    MonoBehaviour[] scripts = attackerrAnim.gameObject.GetComponents<MonoBehaviour>();
-                    //    foreach (var script in scripts)
-                    //    {
-                    //        if (script != null && script != this) // Không tắt chính EnemyHitReceiver nếu cần
-                    //            script.enabled = false;
-                    //    }
-                    //}
                     if (receiverAnim != null)
                     {
                         MonoBehaviour[] scripts = receiverAnim.gameObject.GetComponents<MonoBehaviour>();
@@ -89,8 +79,7 @@ public class EnemyHitReceiver : HitReceiver
                                     go.transform.GetChild(i).gameObject.SetActive(false);
                                 }
                             }
-                            // Khi player win hoặc defeat
-                            GameManager.Instance.LoadSceneAfterDelay("SampleScene", 5f);
+                            PopupEnd.Instance.ShowDefeatPopup();
 
                         }
 
@@ -102,7 +91,11 @@ public class EnemyHitReceiver : HitReceiver
                 }
                 else
                 {
-                    receiverAnim?.PlayHit(hitType);
+                    float hitTime = (float)(receiverAnim?.PlayHit(hitType));
+                    // Debug hittime va hit type
+                    Debug.Log($"EnemyHitReceiver: Hit time for animation: {hitTime}, Hit type: {hitType}");
+                    AttackManager.SetNormalStateFalse(hitTime, receiver.GetComponent<Animator>());
+
                 }
             }
         }

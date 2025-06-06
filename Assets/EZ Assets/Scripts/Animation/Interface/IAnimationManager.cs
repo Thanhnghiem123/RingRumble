@@ -8,7 +8,7 @@ public interface IAnimationManager
     HitType PlayKick();
     HitType PlayHoldKick();
     void PlayBlock(bool isBlocking);
-    void PlayHit(HitType hitType);
+    float PlayHit(HitType hitType);
     void PlayJump();
     void PlayJumpOverIntro();
     HitType PlayKnockedOut();

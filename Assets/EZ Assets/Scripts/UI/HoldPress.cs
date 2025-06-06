@@ -54,6 +54,7 @@ public class HoldPress : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
     private void TriggerAttack(bool isHold)
     {
         if (playerAttack == null) return;
+        if (!AttackManager.PNormalState) return;
         switch (attackType)
         {
             case AttackType.Punch:

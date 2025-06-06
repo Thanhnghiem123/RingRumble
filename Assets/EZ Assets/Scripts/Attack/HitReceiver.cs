@@ -13,6 +13,7 @@ public abstract class HitReceiver : MonoBehaviour
     protected Color gizmoColor = new Color(1f, 0f, 0f, 0.5f);
     protected Health health;
     protected HealthEnemy healthEnemy;
+    protected Animator animator;
 
     protected virtual void Awake()
     {

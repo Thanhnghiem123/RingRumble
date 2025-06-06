@@ -7,6 +7,14 @@ public class AnimationManager : MonoBehaviour, IAnimationManager
     private bool isKnockedOut = false; // Trạng thái để ngăn animation khi bị hạ gục
     private bool isVictorious = false; // Trạng thái khi chiến thắng
 
+    // Them 4 bien quan ly thoi gian animation
+    [SerializeField]
+    private float normalHitTime = 0.5f; // Thời gian cho các đòn đánh bình thường
+    [SerializeField]
+    private float specialHitTime = 3.5f; // Thời gian cho đòn đánh punch
+
+
+
     void Awake()
     {
         animator = GetComponent<Animator>();
@@ -109,29 +117,33 @@ public class AnimationManager : MonoBehaviour, IAnimationManager
         animator.SetBool("BlockIdle", isBlocking);
     }
 
-    public void PlayHit(HitType hitType)
+    public float PlayHit(HitType hitType)
     {
-        if (isKnockedOut || isVictorious) return;
+        if (isKnockedOut || isVictorious) return 0;
         switch (hitType)
         {
             case HitType.HeadPunch:
             case HitType.KidneyPunchRight:
                 animator.SetTrigger("HeadHit");
-                
-                break;
+                return normalHitTime;
             case HitType.KidneyPunchLeft:
-             // Fixed the syntax issue 
             case HitType.Kick:
                 animator.SetTrigger("KidneyHit");
+                return normalHitTime;
                 break;
             case HitType.StomachPunch:
                 animator.SetTrigger("StomachHit");
+                return normalHitTime;
                 break;
             case HitType.Jumping:
             case HitType.Jumping1:
             case HitType.Jumping2:
                 animator.SetTrigger("HoldKickHit");
+                Debug.Log("PlayHit: HoldKickHit animation triggered" + specialHitTime);
+                return specialHitTime;
                 break;
+            default:
+                return 0;
         }
     }
 
@@ -181,4 +193,7 @@ public class AnimationManager : MonoBehaviour, IAnimationManager
         animator.SetTrigger("Death");
         //isKnockedOut = true; // Đặt trạng thái là bị hạ gục
     }
+
+
+
 }

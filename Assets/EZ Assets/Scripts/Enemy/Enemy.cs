@@ -8,6 +8,10 @@ using UnityEngine;
 /// </summary>
 public class Enemy : MonoBehaviour
 {
+
+    [Tooltip("State of player which to check can player attack")]
+    public bool normalState = true;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     private IAnimationManager animationManager;
     private IEnemyMovement enemyMovement;
