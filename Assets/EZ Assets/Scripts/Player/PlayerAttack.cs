@@ -30,7 +30,7 @@ public class PlayerAttack : MonoBehaviour, IPlayerAttack
     public float DameHoldPunch { get => dameHoldPunch; set => dameHoldPunch = value; }
     public float DameKick { get => dameKick; set => dameKick = value; }
     public float DameHoldKick { get => dameHoldKick; set => dameHoldKick = value; }
-    public float AttackCooldown { get; set; } = 0.5f; // Default cooldown, can be adjusted
+    public float AttackCooldown { get; set; } = 0.5f; 
 
     void Start()
     {

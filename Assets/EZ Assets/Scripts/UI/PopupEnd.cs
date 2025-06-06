@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
-using UnityEngine.UI; // Để sử dụng Text, Button, v.v.
-using TMPro; // Để hỗ trợ TextMeshPro nếu bạn dùng nó
+using UnityEngine.UI;
+using TMPro;
 
 public class PopupEnd : MonoBehaviour
 {
@@ -8,14 +8,11 @@ public class PopupEnd : MonoBehaviour
     public static PopupEnd Instance { get; private set; }
 
     [Header("UI Components")]
-    [SerializeField] private GameObject popupPanel; // Panel của popup
-    [SerializeField] private TextMeshProUGUI popupText; // Text UI
-    // Nếu bạn dùng TextMeshPro thay vì Text, bỏ comment dòng dưới và comment dòng trên
-    // [SerializeField] private TextMeshProUGUI popupText;
+    [SerializeField] private GameObject popupPanel; 
+    [SerializeField] private TextMeshProUGUI popupText; 
 
     private void Awake()
     {
-        // Singleton: Nếu đã có instance, hủy đối tượng mới
         if (Instance != null && Instance != this)
         {
             Debug.LogWarning("PopupEnd: Another instance of PopupEnd already exists! Destroying this one.");
@@ -24,7 +21,6 @@ public class PopupEnd : MonoBehaviour
         }
         Instance = this;
 
-        // Kiểm tra các thành phần UI
         if (popupPanel == null)
         {
             Debug.LogWarning("PopupEnd: popupPanel is not assigned!");
@@ -36,11 +32,9 @@ public class PopupEnd : MonoBehaviour
             return;
         }
 
-        // Ẩn popup khi khởi tạo
         HidePopup();
     }
 
-    // Hiển thị popup
     public void ShowPopup()
     {
         if (popupPanel != null)
@@ -53,7 +47,6 @@ public class PopupEnd : MonoBehaviour
         }
     }
 
-    // Ẩn popup
     public void HidePopup()
     {
         if (popupPanel != null)
@@ -66,7 +59,6 @@ public class PopupEnd : MonoBehaviour
         }
     }
 
-    // Đổi text thành "Victory"
     public void SetVictoryText()
     {
         if (popupText != null)
@@ -79,7 +71,6 @@ public class PopupEnd : MonoBehaviour
         }
     }
 
-    // Đổi text thành "Defeat"
     public void SetDefeatText()
     {
         if (popupText != null)
@@ -92,21 +83,18 @@ public class PopupEnd : MonoBehaviour
         }
     }
 
-    // Hiển thị popup với text "Victory"
     public void ShowVictoryPopup()
     {
         SetVictoryText();
         ShowPopup();
     }
 
-    // Hiển thị popup với text "Defeat"
     public void ShowDefeatPopup()
     {
         SetDefeatText();
         ShowPopup();
     }
 
-    // Tùy chọn: Đổi text tùy chỉnh
     public void SetCustomText(string customText)
     {
         if (popupText != null)
@@ -119,7 +107,6 @@ public class PopupEnd : MonoBehaviour
         }
     }
 
-    // Tùy chọn: Hiển thị popup với text tùy chỉnh
     public void ShowCustomPopup(string customText)
     {
         SetCustomText(customText);

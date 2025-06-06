@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using Ilumisoft.HealthSystem;
 using UnityEngine;
 using UnityEngine.AI;
@@ -23,37 +23,37 @@ public class EnemyAttack : MonoBehaviour, IEnemyAttack
     #endregion
 
     #region Inspector Fields
-    [Header("Combat Settings")]
+    [Header("Cài đặt chiến đấu")]
     public float damePunch;
     public float dameHoldPunch;
     public float dameKick;
     public float dameHoldKick;
 
-    [Header("Detection Settings")]
-    [Tooltip("Distance at which entity stops approaching target")]
+    [Header("Cài đặt phát hiện")]
+    [Tooltip("Khoảng cách dừng lại khi tiếp cận mục tiêu")]
     public float stoppingDistance = 0.2f;
 
-    [Tooltip("Height of the detection capsule")]
+    [Tooltip("Chiều cao của vùng phát hiện")]
     public float capsuleHeight = 2f;
 
-    [Tooltip("Radius of the detection capsule")]
+    [Tooltip("Bán kính của vùng phát hiện")]
     public float capsuleRadius = 1f;
 
-    [Header("Attack Settings")]
-    [Tooltip("Cooldown between attacks in seconds")]
+    [Header("Cài đặt tấn công")]
+    [Tooltip("Thời gian chờ giữa các đòn đánh (giây)")]
     public float attackCooldown = 1.5f;
 
-    [Tooltip("Delay before hit detection occurs for regular attacks")]
+    [Tooltip("Độ trễ trước khi phát hiện trúng đòn đánh")]
     public float attackDelay = 0.2f;
 
-    [Tooltip("Randomize which attack to perform")]
+    [Tooltip("Ngẫu nhiên loại đòn đánh")]
     public bool randomizeAttacks = true;
 
-    [Tooltip("Chance to perform a hold attack (0-1)")]
+    [Tooltip("Tỷ lệ thực hiện đòn tấn công giữ (0-1)")]
     [Range(0, 1)]
     public float holdAttackChance = 0.3f;
 
-    [Tooltip("Chance to perform a kick instead of punch (0-1)")]
+    [Tooltip("Tỷ lệ thực hiện đá thay vì đấm (0-1)")]
     [Range(0, 1)]
     public float kickChance = 0.4f;
 

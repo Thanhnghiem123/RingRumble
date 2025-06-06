@@ -79,7 +79,7 @@ public class Player : MonoBehaviour
         kickTimer = new CooldownTimer(kickCooldown);
         jumpTimer = new CooldownTimer(jumpCooldown);
         specialTimer = new CooldownTimer(specialAttackCooldown);
-        climbTimer = new CooldownTimer(climbCooldown); // Khởi tạo timer leo trèo
+        climbTimer = new CooldownTimer(climbCooldown); 
 
         Debug.Log("PlayerAttack initialized with cooldowns: " +
             $"Punch: {punchCooldown}s, Kick: {kickCooldown}s, Jump: {jumpCooldown}s, Special: {specialAttackCooldown}s, Climb: {climbCooldown}s");
@@ -99,7 +99,6 @@ public class Player : MonoBehaviour
             return;
         }
 
-        // Assign health to Player
         if (healthPlayer != null)
         {
             healthPlayer.MaxHealth = data.playerHealth;
@@ -107,7 +106,6 @@ public class Player : MonoBehaviour
             Debug.Log("Player health set to: " + healthPlayer.MaxHealth);
         }
 
-        // Assign attack stats to PlayerAttack
         if (playerAttack != null)
         {
             playerAttack.DamePunch = data.playerDamePunch;
@@ -122,7 +120,6 @@ public class Player : MonoBehaviour
                 $"DameHoldKick={playerAttack.DameHoldKick}");
         }
 
-        // Assign movement speed to PlayerMovement
         if (playerMovement != null)
         {
             playerMovement.Speed = data.playerSpeed;
@@ -152,7 +149,7 @@ public class Player : MonoBehaviour
     {
         if (!climbTimer.IsReady) return;
         if (!jumpTimer.IsReady) return;
-        if (!specialTimer.IsReady) return; // Prevent punch during special cooldown
+        if (!specialTimer.IsReady) return; 
         if (!punchTimer.IsReady) return;
         HitType hitType = (HitType)(animationManager?.PlayHeadPunch());
         punchTimer.Trigger();

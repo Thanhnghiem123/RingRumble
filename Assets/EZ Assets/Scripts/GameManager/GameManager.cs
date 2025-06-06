@@ -1,11 +1,11 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
-    [Header("Game Settings")]
+    [Header("Cài đặt Game")]
     [Range(1, 10)]
     public int totalLevels = 10;
     [Range(1, 3)]
@@ -13,34 +13,33 @@ public class GameManager : MonoBehaviour
     [Range(1, 10)]
     public int currentLevel = 1;
 
-
-    [Header("Game Mode")]
+    [Header("Chế độ chơi")]
     public GameMode gameMode;
-    public LevelData levelData; // Dữ liệu level hiện tại
+    public LevelData levelData; 
     public List<LevelData> levels;
 
-    [Header("Game Objects")]
+    [Header("Đối tượng trong game")]
     public List<GameObject> players = new List<GameObject>();
     public List<GameObject> enemies = new List<GameObject>();
 
-    [Header("Prefabs")]
+    [Header("Prefab")]
     public GameObject playerPrefab;
     public List<GameObject> enemyPrefab;
 
-    [Header("Spawn Points")]
+    [Header("Điểm xuất hiện")]
     public Transform playerSpawnPoint;
     public Transform enemySpawnPoint;
     public float playerSpawnRadius = 1f;
     public float enemySpawnRadius = 1f;
 
-    [Header("Spawn Settings")]
+    [Header("Cài đặt xuất hiện")]
     [Range(1, 10)]
     public int playerCount = 1;
     [Range(1, 10)]
     public int enemyCount = 1;
 
-    [Header("Level Generator")]
-    public LevelGenerator levelGenerator; // Tham chiếu đến LevelGenerator nếu cần
+    [Header("Tạo màn chơi")]
+    public LevelGenerator levelGenerator; 
 
     public static GameManager Instance { get; private set; }
 

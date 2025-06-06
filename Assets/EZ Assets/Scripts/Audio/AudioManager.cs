@@ -1,19 +1,19 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class AudioManager : MonoBehaviour
 {
     public static AudioManager Instance { get; private set; }
 
-    [Header("Audio Sources")]
+    [Header("Nguồn Âm thanh")]
     public AudioSource musicSource;
     public AudioSource sfxSource;
 
-    [Header("Audio Clips")]
+    [Header("Âm thanh")]
     public AudioClip backgroundMusic;
     public List<AudioClip> sfxClips;
 
-    [Header("Volume Settings")]
+    [Header("Cài đặt Âm lượng")]
     [Range(0f, 1f)]
     public float musicVolume = 1f;
     [Range(0f, 1f)]

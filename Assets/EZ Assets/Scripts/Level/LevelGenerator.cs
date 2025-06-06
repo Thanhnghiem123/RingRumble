@@ -22,7 +22,6 @@ public class LevelGenerator : MonoBehaviour
     public float basePlayerDameHoldKick = 15f;
     public float basePlayerSpeed = 1f;
 
-    // Multipliers based on GameMode
     public float enemyHealthMultiplier;
     public float enemyDamageMultiplier;
     public float enemySpeedMultiplier;
@@ -34,8 +33,8 @@ public class LevelGenerator : MonoBehaviour
     public float playerSpeedMultiplier;
 
 
-    public float percentDameEnemy = 0.25f; // Percentage increase for enemy damage scaling
-    public float percentDamePlayer = 0.25f; // Percentage increase for player damage scaling
+    public float percentDameEnemy = 0.25f; 
+    public float percentDamePlayer = 0.25f; 
 
 
 
@@ -47,28 +46,28 @@ public class LevelGenerator : MonoBehaviour
         switch (gameMode)
         {
             case GameMode.OneVsMany:
-                enemyHealthMultiplier = 0.8f;       // 80% base health
-                enemyDamageMultiplier = 0.8f;       // 70% base damage
-                enemySpeedMultiplier = 0.8f;        // 80% base speed
-                cooldownReductionMultiplier = 0.5f; // Slower cooldown reduction
-                chanceMultiplier = 0.5f;            // Lower attack chance increase
-                playerHealthMultiplier = 1.3f;      // 120% base health
-                playerDamageMultiplier = 1.3f;      // 130% base damage
-                playerSpeedMultiplier = 1.3f;       // 120% base speed
+                enemyHealthMultiplier = 0.8f;       
+                enemyDamageMultiplier = 0.8f;       
+                enemySpeedMultiplier = 0.8f;       
+                cooldownReductionMultiplier = 0.5f; 
+                chanceMultiplier = 0.5f;            
+                playerHealthMultiplier = 1.3f;     
+                playerDamageMultiplier = 1.3f;      
+                playerSpeedMultiplier = 1.3f;       
                 break;
             case GameMode.ManyVsMany:
-                enemyHealthMultiplier = 1.3f;       // 130% base health
-                enemyDamageMultiplier = 1.3f;       // 150% base damage
-                enemySpeedMultiplier = 1.3f;        // 120% base speed
-                cooldownReductionMultiplier = 1.5f; // Faster cooldown reduction
-                chanceMultiplier = 1.5f;            // Higher attack chance increase
-                playerHealthMultiplier = 0.9f;      // 90% base health
-                playerDamageMultiplier = 0.9f;      // 80% base damage
-                playerSpeedMultiplier = 0.9f;       // 90% base speed
+                enemyHealthMultiplier = 1.3f;       
+                enemyDamageMultiplier = 1.3f;      
+                enemySpeedMultiplier = 1.3f;        
+                cooldownReductionMultiplier = 1.5f; 
+                chanceMultiplier = 1.5f;            
+                playerHealthMultiplier = 0.9f;      
+                playerDamageMultiplier = 0.9f;     
+                playerSpeedMultiplier = 0.9f;      
                 break;
             case GameMode.OneVsOne:
             default:
-                enemyHealthMultiplier = 1f;         // 100% base
+                enemyHealthMultiplier = 1f;         
                 enemyDamageMultiplier = 1f;
                 enemySpeedMultiplier = 1f;
                 cooldownReductionMultiplier = 1f;
@@ -81,7 +80,6 @@ public class LevelGenerator : MonoBehaviour
 
         for (int i = 1; i <= levelAmountData; i++)
         {
-            // Apply base stats with mode multipliers and level progression
             float enemyHealth = baseEnemyHealth * enemyHealthMultiplier * (1 + 0.3f * (i - 1));
             float enemyDamePunch = baseEnemyDamePunch * enemyDamageMultiplier * CalculateDame(i, percentDameEnemy);
             float enemyDameHoldPunch = baseEnemyDameHoldPunch * enemyDamageMultiplier * CalculateDame(i, percentDameEnemy);

@@ -9,27 +9,27 @@ public class PlayerMovement : MonoBehaviour, IPlayerMovement
     [Tooltip("Tốc độ xoay khi đổi hướng")]
     public float rotationSpeed;
     [Tooltip("Lực nhảy áp dụng theo hướng 45 độ")]
-    public float jumpForce; // Lực nhảy, điều chỉnh trong Inspector
+    public float jumpForce; 
     [Tooltip("Khoảng cách kiểm tra mặt đất phía dưới nhân vật")]
-    public float groundCheckDistance = 0.2f; // Khoảng cách kiểm tra chạm đất
+    public float groundCheckDistance = 0.2f; 
     [Tooltip("Layer được coi là mặt đất")]
-    public LayerMask groundLayer; // Layer để xác định mặt đất
+    public LayerMask groundLayer; 
     [Tooltip("Trạng thái tiếp xúc với mặt đất")]
-    public bool isGrounded; // Trạng thái chạm đất
+    public bool isGrounded;
     [Tooltip("Thời gian nhân vật di chuyển về phía trước trước khi nhảy")]
-    public float jumpMoveDuration; // Thời gian di chuyển trước khi nhảy
+    public float jumpMoveDuration; 
     [Tooltip("Thời gian nhân vật di chuyển về phía trước trước khi trèo")]
-    public float climbMoveDuration; // Thời gian di chuyển trước khi trèo
+    public float climbMoveDuration; 
 
     [Header("Climb Settings")]
     [Tooltip("Hệ số giảm tốc độ khi tiếp cận vật cản")]
-    public float climbForwardSpeedMultiplier = 0.4f; // Hệ số tốc độ khi tiếp cận vật cản
+    public float climbForwardSpeedMultiplier = 0.4f; 
     [Tooltip("Chiều cao tối đa khi trèo vật cản")]
-    public float climbHeight = 1.5f; // Chiều cao trèo
+    public float climbHeight = 1.5f; 
     [Tooltip("Khoảng cách tiến về phía trước khi hoàn thành trèo")]
-    public float climbDistance = 1f; // Khoảng cách tiến về phía trước khi trèo
+    public float climbDistance = 1f; 
     [Tooltip("Thời gian thực hiện hoàn tất động tác trèo")]
-    public float climbDuration = 1f; // Thời gian để trèo
+    public float climbDuration = 1f; 
 
 
     [Header("LayerMask")]
@@ -42,9 +42,9 @@ public class PlayerMovement : MonoBehaviour, IPlayerMovement
     private PlayerAttack playerAttack;
     private IMovementInput movementInput;
 
-    public float Speed { get => speed; set => speed = value; } // Thuộc tính để truy cập tốc độ di chuyển
+    public float Speed { get => speed; set => speed = value; } 
 
-    public bool IsGrounded() => isGrounded = Physics.Raycast(transform.position, Vector3.down, groundCheckDistance, groundLayer); // Thuộc tính để kiểm tra trạng thái chạm đất
+    public bool IsGrounded() => isGrounded = Physics.Raycast(transform.position, Vector3.down, groundCheckDistance, groundLayer); 
 
     void Start()
     {
@@ -52,7 +52,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerMovement
         if (rb == null)
         {
             Debug.LogError("Rigidbody not found on " + gameObject.name);
-            enabled = false; // Tắt script nếu không có Rigidbody
+            enabled = false; 
             return;
         }
         animationManager = GetComponent<IAnimationManager>();
@@ -65,7 +65,6 @@ public class PlayerMovement : MonoBehaviour, IPlayerMovement
             animationManager.PlayIdle();
         }
 
-        // Đảm bảo Rigidbody không bị khóa chuyển động
         rb.constraints &= ~(RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionZ);
 
         playerAttack = GetComponent<PlayerAttack>();
@@ -110,12 +109,10 @@ public class PlayerMovement : MonoBehaviour, IPlayerMovement
         if (rb != null && movementInput != null)
         {
             Vector3 direction = movementInput.GetDirection();
-            // Áp dụng vận tốc trên mặt phẳng XZ, giữ nguyên trọng lực
             Vector3 moveVelocity = direction.normalized * speed;
-            moveVelocity.y = rb.linearVelocity.y; // Giữ vận tốc Y từ trọng lực
+            moveVelocity.y = rb.linearVelocity.y; 
             rb.linearVelocity = new Vector3(moveVelocity.x, moveVelocity.y, moveVelocity.z);
 
-            // Xoay nhân vật theo hướng di chuyển
             if (direction != Vector3.zero)
             {
                 Quaternion toRotation = Quaternion.LookRotation(direction, Vector3.up);
@@ -132,8 +129,6 @@ public class PlayerMovement : MonoBehaviour, IPlayerMovement
     {
         if (rb != null)
         {
-            // Đặt vận tốc về 0 trên XZ, giữ Y cho trọng lực
-            //rb.linearVelocity = new Vector3(0f, rb.linearVelocity.y, 0f);
         }
         animationManager?.PlayRun(false);
         animationManager?.PlayIdle();
@@ -159,7 +154,6 @@ public class PlayerMovement : MonoBehaviour, IPlayerMovement
     /// <returns></returns>
     private IEnumerator JumpWithForwardDelay()
     {
-        // Chạy về phía trước trong jumpMoveDuration (chỉ XZ, không đụng tới Y)
         float timer = 0f;
         Vector3 forwardXZ = new Vector3(transform.forward.x, 0, transform.forward.z).normalized;
         float forwardSpeed = speed;
@@ -167,15 +161,14 @@ public class PlayerMovement : MonoBehaviour, IPlayerMovement
         while (timer < jumpMoveDuration)
         {
             move = forwardXZ * forwardSpeed;
-            rb.linearVelocity = new Vector3(move.x, rb.linearVelocity.y, move.z); // Giữ nguyên Y
+            rb.linearVelocity = new Vector3(move.x, rb.linearVelocity.y, move.z); 
             timer += Time.deltaTime;
             yield return null;
         }
 
         move = forwardXZ * forwardSpeed;
-        rb.linearVelocity = new Vector3(move.x, rb.linearVelocity.y, move.z); // Giữ nguyên Y
+        rb.linearVelocity = new Vector3(move.x, rb.linearVelocity.y, move.z); 
 
-        // Tính hướng nhảy 45 độ giữa lên và trước (trên mặt phẳng XZ)
         Vector3 jumpDirection = (Vector3.up + transform.forward).normalized;
         Debug.Log("Jump Direction: " + jumpDirection);
 
@@ -190,7 +183,6 @@ public class PlayerMovement : MonoBehaviour, IPlayerMovement
     {
         if (rb != null && isGrounded)
         {
-            // Bắt đầu coroutine nhảy qua intro
             StartCoroutine(ClimbOverObstacleCoroutine());
         }
     }
@@ -201,28 +193,24 @@ public class PlayerMovement : MonoBehaviour, IPlayerMovement
     /// <returns></returns>
     private IEnumerator ClimbOverObstacleCoroutine()
     {
-        // Chạy về phía trước trong climbMoveDuration (chỉ XZ, không đụng tới Y)
         float timer = 0f;
         Vector3 forwardXZ = new Vector3(transform.forward.x, 0, transform.forward.z).normalized;
-        float forwardSpeed = speed * climbForwardSpeedMultiplier; // Sử dụng tốc độ điều chỉnh
+        float forwardSpeed = speed * climbForwardSpeedMultiplier; 
         Vector3 move;
         while (timer < climbMoveDuration)
         {
             move = forwardXZ * forwardSpeed;
-            rb.linearVelocity = new Vector3(move.x, rb.linearVelocity.y, move.z); // Giữ nguyên Y
+            rb.linearVelocity = new Vector3(move.x, rb.linearVelocity.y, move.z); 
             timer += Time.deltaTime;
             yield return null;
         }
         move = forwardXZ * forwardSpeed;
-        rb.linearVelocity = new Vector3(move.x, rb.linearVelocity.y, move.z); // Giữ nguyên Y
+        rb.linearVelocity = new Vector3(move.x, rb.linearVelocity.y, move.z); 
 
-        // Tính hướng 45 độ giữa lên và trước (trên mặt phẳng XZ)
         Vector3 climbDirection = (Vector3.up + transform.forward).normalized;
-        // Điểm đích sau khi trèo (chiều cao và khoảng cách tùy chỉnh)
         Vector3 startPos = transform.position;
         Vector3 climbTarget = transform.position + climbDirection * climbDistance + Vector3.up * climbHeight;
 
-        // Di chuyển lên từ từ theo hướng 45 độ trong thời gian climbDuration
         timer = 0f;
 
         while (timer < climbDuration)
@@ -233,10 +221,8 @@ public class PlayerMovement : MonoBehaviour, IPlayerMovement
             yield return null;
         }
 
-        // Đặt vị trí cuối cùng để tránh lỗi nhỏ
         transform.position = climbTarget;
 
-        // Tiếp tục di chuyển về phía trước sau khi trèo
         rb.linearVelocity = new Vector3(forwardXZ.x * forwardSpeed, rb.linearVelocity.y, forwardXZ.z * forwardSpeed);
     }
 }

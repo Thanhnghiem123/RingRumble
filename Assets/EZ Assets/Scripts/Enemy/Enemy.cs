@@ -1,12 +1,11 @@
-﻿using Ilumisoft.HealthSystem;
+using Ilumisoft.HealthSystem;
 using Unity.VisualScripting;
 using UnityEngine;
-
 
 public class Enemy : MonoBehaviour
 {
 
-    [Tooltip("State of player which to check can player attack")]
+    [Tooltip("Trạng thái để kiểm tra kẻ địch có thể tấn công không")]
     public bool normalState = true;
 
     private IAnimationManager animationManager;

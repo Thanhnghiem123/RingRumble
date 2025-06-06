@@ -15,13 +15,13 @@ namespace Ilumisoft.HealthSystem.UI
         [SerializeField]
         Image fillImage;
 
-        [SerializeField, Tooltip("Whether the healthbar should be hidden when health is empty")]
+        [SerializeField, Tooltip("Ẩn thanh máu khi máu bằng 0")]
         bool hideEmpty = false;
 
-        [SerializeField, Tooltip("Makes the healthbar being aligned with the camera")]
+        [SerializeField, Tooltip("Căn chỉnh thanh máu theo hướng camera")]
         bool alignWithCamera = false;
 
-        [SerializeField, Min(0.1f), Tooltip("Controls how fast changes will be animated in points/second")]
+        [SerializeField, Min(0.1f), Tooltip("Tốc độ thay đổi thanh máu (điểm/giây)")]
         float changeSpeed = 100;
 
         float currentValue;
@@ -79,7 +79,7 @@ namespace Ilumisoft.HealthSystem.UI
                         canvas.gameObject.SetActive(false);
                     }
                 }
-                // Make sure the canvas is enabled if health is not empty
+                
                 else if (value > 0 && canvas.gameObject.activeSelf == false)
                 {
                     canvas.gameObject.SetActive(true);

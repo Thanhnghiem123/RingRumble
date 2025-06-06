@@ -1,15 +1,15 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 namespace Ilumisoft.HealthSystem
 {
     [AddComponentMenu("Health System/Health")]
     public class Health : HealthComponent
     {
-        [Tooltip("The max amount of health that can be assigned")]
+        [Tooltip("Lượng máu tối đa")]
         [SerializeField]
         private float maxHealth = 100.0f;
 
-        [Tooltip("The initial amount of health assigned")]
+        [Tooltip("Tỷ lệ máu ban đầu (từ 0 đến 1)")]
         [SerializeField, Range(0, 1)]
         private float initialRatio = 1.0f;
 

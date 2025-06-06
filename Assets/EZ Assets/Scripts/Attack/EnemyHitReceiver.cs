@@ -23,7 +23,6 @@ public class EnemyHitReceiver : HitReceiver
     {
         if (receiver != null && knockbackConfig != null)
         {
-            // Lấy animationManager và Rigidbody từ attacker
             AnimationManager receiverAnim = receiver.GetComponent<AnimationManager>();
             AnimationManager attackerrAnim = GetComponent<AnimationManager>();
             Rigidbody receiverRb = receiver.GetComponent<Rigidbody>();
@@ -33,7 +32,6 @@ public class EnemyHitReceiver : HitReceiver
             Debug.Log("ISALIVE: " + IsAlive());
             
 
-            // Áp dụng knockback lên attacker
             if (receiverRb != null)
             {
                 Debug.Log($"EnemyHitReceiver: Received hit of type {hitType} from {receiver.name}");
@@ -65,14 +63,12 @@ public class EnemyHitReceiver : HitReceiver
                         if (!IsAlive())
                         {
                             GameManager.Instance.RemovePlayer(receiverAnim.gameObject);
-                             //... các logic chết khác
                         }
 
                         if (receiver.CompareTag("Player"))
                         {
                             attackerrAnim?.PlayVictory();
 
-                            // Disable all GameObjects in the scene with tag "Canvas"
                             GameObject[] allCanvasObjects = GameObject.FindGameObjectsWithTag("Canvas");
 
                             foreach (GameObject go in allCanvasObjects)
@@ -97,7 +93,6 @@ public class EnemyHitReceiver : HitReceiver
                 else
                 {
                     float hitTime = (float)(receiverAnim?.PlayHit(hitType));
-                    // Debug hittime va hit type
                     Debug.Log($"EnemyHitReceiver: Hit time for animation: {hitTime}, Hit type: {hitType}");
                     AttackManager.SetNormalStateFalse(hitTime, receiver.GetComponent<Animator>());
 

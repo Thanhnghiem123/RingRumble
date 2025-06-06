@@ -10,7 +10,7 @@ public class HoldPress : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
     private bool isPointerDown = false;
     public bool hasTriggeredAttack = false; // Đã tung chiêu đặc biệt chưa
 
-    public Player playerAttack; // Kéo thả vào Inspector
+    public Player playerAttack; 
 
     void Update()
     {

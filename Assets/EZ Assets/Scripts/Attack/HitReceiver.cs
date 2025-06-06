@@ -53,7 +53,6 @@ public abstract class HitReceiver : MonoBehaviour
     {
         yield return new WaitForSeconds(delay);
 
-        // Kiểm tra xem enemyLayer có chứa layer "Player" hay không
         int playerLayer = LayerMask.NameToLayer("Player");
         Collider[] hits = DetectColliders(capsuleHeight, capsuleRadius, enemyLayer);
         foreach (var hit in hits)
