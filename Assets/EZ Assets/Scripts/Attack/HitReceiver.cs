@@ -23,16 +23,15 @@ public abstract class HitReceiver : MonoBehaviour
         
     }
 
-    public virtual void ReceiveHoldPunch()
-    {
-        animationManager?.PlayHoldPunch();
-    }
-
-    public virtual void ReceiveKnockout()
-    {
-        animationManager?.PlayKnockedOut();
-    }
-
+    /// <summary>
+    /// Nhận hit từ một đối tượng khác.
+    /// </summary>
+    /// <param name="hitType"></param>
+    /// <param name="delay"></param>
+    /// <param name="capsuleHeight"></param>
+    /// <param name="capsuleRadius"></param>
+    /// <param name="dame"></param>
+    /// <param name="enemyLayer"></param>
     public virtual void ReceiveHit(HitType hitType, float delay, float capsuleHeight, float capsuleRadius, float dame, LayerMask enemyLayer)
     {
         StartCoroutine(DelayedHitDetection(hitType, delay, capsuleHeight, capsuleRadius, dame, enemyLayer));
@@ -40,6 +39,16 @@ public abstract class HitReceiver : MonoBehaviour
         gizmoCapsuleRadius = capsuleRadius;
     }
 
+    /// <summary>
+    /// Thực hiện kiểm tra va chạm sau một khoảng thời gian trễ.
+    /// </summary>
+    /// <param name="hitType"></param>
+    /// <param name="delay"></param>
+    /// <param name="capsuleHeight"></param>
+    /// <param name="capsuleRadius"></param>
+    /// <param name="dame"></param>
+    /// <param name="enemyLayer"></param>
+    /// <returns></returns>
     public IEnumerator DelayedHitDetection(HitType hitType, float delay, float capsuleHeight, float capsuleRadius,float dame, LayerMask enemyLayer)
     {
         yield return new WaitForSeconds(delay);

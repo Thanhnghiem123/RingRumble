@@ -3,16 +3,12 @@ using Unity.VisualScripting;
 using UnityEngine;
 
 
-/// <summary>
-/// Quản lý trạng thái và animation của enemy.
-/// </summary>
 public class Enemy : MonoBehaviour
 {
 
     [Tooltip("State of player which to check can player attack")]
     public bool normalState = true;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     private IAnimationManager animationManager;
     private IEnemyMovement enemyMovement;
     private IEnemyAttack enemyAttack;
@@ -30,7 +26,6 @@ public class Enemy : MonoBehaviour
         StartLevel();
     }
 
-    // Update is called once per frame
     void Update()
     {
 
@@ -45,7 +40,6 @@ public class Enemy : MonoBehaviour
 
         else
             enemyMovement.Movement();
-        //Debug.Log("Enemy is moving: " + enemyMovement.IsMoving);
 
 
 
@@ -62,7 +56,6 @@ public class Enemy : MonoBehaviour
             return;
         }
 
-        // Gán máu cho Enemy
         if (healthEnemy != null)
         {
             healthEnemy.MaxHealth = data.enemyHealth;
@@ -70,7 +63,6 @@ public class Enemy : MonoBehaviour
             Debug.Log("Enemy health set to: " + healthEnemy.MaxHealth);
         }
 
-        // Gán các chỉ số tấn công cho EnemyAttack
         if (enemyAttack != null)
         {
             enemyAttack.DamePunch = data.enemyDamePunch;
@@ -92,7 +84,6 @@ public class Enemy : MonoBehaviour
                 $"KickChance={enemyAttack.KickChance}");
         }
 
-        // Gán tốc độ di chuyển cho EnemyMovement
         if (enemyMovement != null)
         {
             enemyMovement.SetAgentSpeed = data.enemySpeed;

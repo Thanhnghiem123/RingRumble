@@ -13,7 +13,12 @@ public class EnemyHitReceiver : HitReceiver
     }
 
 
-
+    /// <summary>
+    /// Xử lý nhận hit từ một đối tượng khác và xử lý các sự kiện liên quan
+    /// </summary>
+    /// <param name="hitType"></param>
+    /// <param name="dame"></param>
+    /// <param name="receiver"></param>
     protected override void ReceiveHit(HitType hitType, float dame, Transform receiver = null)
     {
         if (receiver != null && knockbackConfig != null)

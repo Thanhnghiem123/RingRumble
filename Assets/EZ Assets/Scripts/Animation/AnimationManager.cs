@@ -1,17 +1,19 @@
 ﻿
-// AnimationManager.cs - Manages all player animations
 using UnityEngine;
 public class AnimationManager : MonoBehaviour, IAnimationManager
 {
     private Animator animator;
-    private bool isKnockedOut = false; // Trạng thái để ngăn animation khi bị hạ gục
-    private bool isVictorious = false; // Trạng thái khi chiến thắng
+    [Tooltip("Thời gian cho các đòn đánh bình thường và đòn đánh mạnh")]
+    private bool isKnockedOut = false; 
+    [Tooltip("Trạng thái để ngăn animation khi chiến thắng")]
+    private bool isVictorious = false; 
 
-    // Them 4 bien quan ly thoi gian animation
     [SerializeField]
-    private float normalHitTime = 0.5f; // Thời gian cho các đòn đánh bình thường
+    [Tooltip("Thời gian cho các đòn đánh bình thường và đòn đánh mạnh")]
+    private float normalHitTime = 0.5f; 
     [SerializeField]
-    private float specialHitTime = 3.5f; // Thời gian cho đòn đánh punch
+    [Tooltip("Thời gian cho đòn đánh punch")]
+    private float specialHitTime = 3.5f; 
 
 
 
@@ -71,7 +73,6 @@ public class AnimationManager : MonoBehaviour, IAnimationManager
     {
         if (isKnockedOut || isVictorious) return HitType.HeadPunch;
         animator.SetTrigger("KidneyPunchRight");
-        // punch mạnh
         AudioManager.Instance.PlaySFX("punch3");
         return HitType.KidneyPunchRight;
     }
@@ -80,7 +81,6 @@ public class AnimationManager : MonoBehaviour, IAnimationManager
     {
         if (isKnockedOut || isVictorious) return HitType.Kick;
         animator.SetTrigger("Kick");
-        // kick
         string[] kickClips = { "kick", "kick2" };
         string randomClip = kickClips[Random.Range(0, kickClips.Length)];
         AudioManager.Instance.PlaySFX(randomClip);

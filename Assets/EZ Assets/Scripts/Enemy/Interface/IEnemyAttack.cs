@@ -19,5 +19,6 @@ public interface IEnemyAttack
     void PerformAttack();
 
     bool IsPlayerInAttackRange();
+    bool IsEnemyInAttackRange();
     void Attack();
 }

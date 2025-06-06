@@ -1,5 +1,4 @@
-﻿// IAnimationManager.cs - Interface for animation management
-public interface IAnimationManager
+﻿public interface IAnimationManager
 {
     void PlayIdle();
     void PlayRun(bool isRunning);

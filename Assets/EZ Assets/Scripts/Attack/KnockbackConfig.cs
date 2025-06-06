@@ -3,10 +3,13 @@ using UnityEngine;
 
 public class KnockbackConfig : MonoBehaviour
 {
-
+    [Tooltip("Khoảng cách bị đẩy lùi khi bị đánh bằng đòn punch")]
     public float punchKnockback = 0.5f;
+    [Tooltip("Khoảng cách bị đẩy lùi khi bị đánh bằng đòn kick")]
     public float kickKnockback = 0.5f;
+    [Tooltip("Khoảng cách bị đẩy lùi khi bị đánh bằng đòn hold punch")]
     public float holdPunchKnockback = 1f;
+    [Tooltip("Khoảng cách bị đẩy lùi khi bị đánh bằng đòn hold kick")]
     public float holdKickKnockback = 3f;
 
     public KnockbackConfig(float punchKnockback, float kickKnockback, float holdPunchKnockback, float holdKickKnockback)
@@ -17,6 +20,11 @@ public class KnockbackConfig : MonoBehaviour
         this.holdKickKnockback = holdKickKnockback;
     }
 
+    /// <summary>
+    /// Lấy lực đẩy lùi dựa trên loại đòn đánh.
+    /// </summary>
+    /// <param name="hitType"></param>
+    /// <returns></returns>
     public float GetKnockbackForce(HitType hitType)
     {
         switch (hitType)

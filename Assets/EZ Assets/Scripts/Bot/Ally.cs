@@ -42,9 +42,8 @@ public class Ally : MonoBehaviour
             return;
         }
 
-        // Kiểm tra mục tiêu từ EnemyMovement để đảm bảo tấn công đúng
         Transform target = (enemyMovement as EnemyMovement)?.FindNearestTarget();
-        if (target != null && enemyAttack.IsPlayerInAttackRange())
+        if (target != null && enemyAttack.IsEnemyInAttackRange())
         {
             Debug.Log($"[{gameObject.name}] Attacking target: {target.name} in range. transform {target.transform.position}");
             enemyAttack.Attack();
@@ -79,6 +78,9 @@ public class Ally : MonoBehaviour
             enemyAttack.DameHoldPunch = data.enemyDameHoldPunch;
             enemyAttack.DameKick = data.enemyDameKick;
             enemyAttack.DameHoldKick = data.enemyDameHoldKick;
+            enemyAttack.AttackCooldown = data.enemyAttackCooldown;
+            enemyAttack.HoldAttackChance = data.enemyholdAttackChance;
+            enemyAttack.KickChance = data.enemykickChance;
 
 
         }

@@ -27,7 +27,6 @@ public class AudioManager : MonoBehaviour
         Instance = this;
         DontDestroyOnLoad(gameObject);
 
-        // Khởi tạo Dictionary cho SFX
         sfxDict = new Dictionary<string, AudioClip>();
         if (sfxClips != null)
         {
@@ -136,11 +135,8 @@ public class AudioManager : MonoBehaviour
     public void SetSFXVolume(float volume)
     {
         sfxVolume = Mathf.Clamp01(volume);
-        // Lưu ý: PlayOneShot không bị ảnh hưởng bởi sfxSource.volume,
-        // nhưng có thể cập nhật để nhất quán
     }
 
-    // Thêm hiệu ứng fade cho nhạc
     public void FadeMusic(float targetVolume, float duration)
     {
         if (musicSource == null)

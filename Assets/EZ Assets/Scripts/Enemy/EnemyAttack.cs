@@ -18,7 +18,7 @@ public class EnemyAttack : MonoBehaviour, IEnemyAttack
     private bool targetInAttackRange = false;
     public float lastAttackTime = 0f;
     private int currentAttackIndex = 0;
-    [Tooltip("Set to true for ally (targets enemies), false for enemy (targets players and allies)")]
+    [Tooltip("Đặt true nếu là đồng minh (đối tượng tấn công là kẻ thù), false nếu là kẻ thù (đối tượng tấn công là người chơi)")]
     public bool isAlly = false;
     #endregion
 
@@ -160,14 +160,39 @@ public class EnemyAttack : MonoBehaviour, IEnemyAttack
         Vector3 center = transform.position + transform.forward * capsuleRadius;
         Vector3 point1 = center + Vector3.up * (capsuleHeight * 0.5f - capsuleRadius);
         Vector3 point2 = center - Vector3.up * (capsuleHeight * 0.5f - capsuleRadius);
-        Collider[] hits = Physics.OverlapCapsule(point1, point2, capsuleRadius, targetLayerMask);
+        LayerMask layerMask = LayerMask.GetMask("Player") | LayerMask.GetMask("Ally");
+        Collider[] hits = Physics.OverlapCapsule(point1, point2, capsuleRadius, layerMask);
 
         if (hits.Length > 0)
         {
             Debug.DrawLine(point1, point2, Color.red, 1f);
             foreach (var hit in hits)
             {
-                Debug.Log($"{(isAlly ? "Ally" : "Enemy")} on {gameObject.name} - Detected target: {hit.gameObject.name} in layer: {LayerMask.LayerToName(hit.gameObject.layer)} , targetlayer : {targetLayerMask}");
+                Debug.Log($"{("Enemy")} on {gameObject.name} - Detected target: {hit.gameObject.name} in layer: {LayerMask.LayerToName(hit.gameObject.layer)} , targetlayer : {targetLayerMask}");
+            }
+            return true;
+        }
+        else
+        {
+            Debug.DrawLine(point1, point2, Color.green, 1f);
+            return false;
+        }
+    }
+
+    public bool IsEnemyInAttackRange()
+    {
+        Vector3 center = transform.position + transform.forward * capsuleRadius;
+        Vector3 point1 = center + Vector3.up * (capsuleHeight * 0.5f - capsuleRadius);
+        Vector3 point2 = center - Vector3.up * (capsuleHeight * 0.5f - capsuleRadius);
+        LayerMask layerMask = LayerMask.GetMask("Enemy");
+        Collider[] hits = Physics.OverlapCapsule(point1, point2, capsuleRadius, layerMask);
+
+        if (hits.Length > 0)
+        {
+            Debug.DrawLine(point1, point2, Color.red, 1f);
+            foreach (var hit in hits)
+            {
+                Debug.Log($"{("Ally")} on {gameObject.name} - Detected target: {hit.gameObject.name} in layer: {LayerMask.LayerToName(hit.gameObject.layer)} , targetlayer : {targetLayerMask}");
             }
             return true;
         }
@@ -213,8 +238,8 @@ public class EnemyAttack : MonoBehaviour, IEnemyAttack
         HitType hitType = PlayAttackAnimation(attackType);
         (float dame, float delay) = GetDamageByHitType(attackType);
         Debug.Log($"{(isAlly ? "Ally" : "Enemy")} on {gameObject.name} - Executing attack: {attackType} with damage: {dame}, delay: {delay}");
-        hitReceiver?.ReceiveHit(hitType, delay, capsuleHeight, capsuleRadius, dame, targetLayerMask);
-        hitReceiver2?.ReceiveHit(hitType, delay, capsuleHeight, capsuleRadius, dame, targetLayerMask);
+        hitReceiver?.ReceiveHit(hitType, delay, capsuleHeight, capsuleRadius, dame, LayerMask.GetMask("Player"));
+        hitReceiver2?.ReceiveHit(hitType, delay, capsuleHeight, capsuleRadius, dame, LayerMask.GetMask("Enemy"));
     }
 
     public enum AttackType
